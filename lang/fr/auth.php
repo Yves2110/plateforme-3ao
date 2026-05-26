@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'login'              => 'Se connecter',
+    'register'           => 'Créer un compte',
+    'logout'             => 'Se déconnecter',
+    'email'              => 'Adresse e-mail',
+    'password'           => 'Mot de passe',
+    'password_confirm'   => 'Confirmer le mot de passe',
+    'name'               => 'Nom complet',
+    'remember'           => 'Se souvenir de moi',
+    'forgot_password'    => 'Mot de passe oublié ?',
+    'reset_password'     => 'Réinitialiser le mot de passe',
+    'send_reset_link'    => 'Envoyer le lien de réinitialisation',
+    'no_account'         => 'Pas encore de compte ?',
+    'already_account'    => 'Déjà un compte ?',
+    'failed'             => 'Ces identifiants ne correspondent pas à nos enregistrements.',
+    'throttle'           => 'Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.',
+    'verified'           => 'Votre e-mail a été vérifié.',
+    'verify_email'       => 'Vérifier votre adresse e-mail',
+    'verify_notice'      => 'Un lien de vérification a été envoyé à votre adresse e-mail.',
+    'verify_resend'      => 'Renvoyer l\'e-mail de vérification',
+    'profile'            => 'Mon profil',
+    'two_factor'         => 'Authentification à deux facteurs',
+];

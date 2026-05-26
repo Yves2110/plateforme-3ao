@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Variables CSS 3AO ===== */
+:root {
+    --color-green-dark:  #2D6A4F;
+    --color-green:       #40916C;
+    --color-green-light: #52B788;
+    --color-green-pale:  #B7E4C7;
+    --color-ocre:        #D4A017;
+    --color-ocre-light:  #F4C842;
+    --color-cream:       #F8F5F0;
+    --color-text:        #1A1A2E;
+    --color-muted:       #6B7280;
+}
+
+/* ===== Base ===== */
+[x-cloak] { display: none !important; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--color-text);
+    background-color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+/* ===== Components ===== */
+@layer components {
+
+    /* Boutons */
+    .btn-primary {
+        @apply inline-flex items-center gap-2 px-6 py-3 bg-[#2D6A4F] hover:bg-[#40916C] text-white font-semibold rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center gap-2 px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-full border border-white/50 backdrop-blur-sm transition-all duration-200;
+    }
+
+    .btn-outline {
+        @apply inline-flex items-center gap-2 px-6 py-3 bg-transparent hover:bg-[#2D6A4F] text-[#2D6A4F] hover:text-white font-semibold rounded-full border-2 border-[#2D6A4F] transition-all duration-200;
+    }
+
+    /* Cards */
+    .card {
+        @apply bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden;
+    }
+
+    .card-news {
+        @apply flex gap-3 p-0 hover:bg-gray-50 rounded-xl transition-colors duration-150 cursor-pointer;
+    }
+
+    /* Badges de catégorie */
+    .badge {
+        @apply inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full uppercase tracking-wide;
+    }
+    .badge-annonce    { @apply bg-blue-100 text-blue-700; }
+    .badge-evenement  { @apply bg-purple-100 text-purple-700; }
+    .badge-publication { @apply bg-green-100 text-green-700; }
+    .badge-actualite  { @apply bg-orange-100 text-orange-700; }
+
+    /* Section headings */
+    .section-title {
+        @apply font-display text-3xl font-bold text-[#1A1A2E];
+    }
+    .section-subtitle {
+        @apply text-[#6B7280] text-lg mt-2;
+    }
+
+    /* Nav link */
+    .nav-link {
+        @apply text-sm font-medium text-gray-700 hover:text-[#2D6A4F] transition-colors duration-150 relative;
+    }
+    .nav-link.active {
+        @apply text-[#2D6A4F] font-semibold;
+    }
+
+    /* Stat counter cards */
+    .stat-card {
+        @apply flex flex-col items-center gap-1 p-4;
+    }
+    .stat-number {
+        @apply font-display text-3xl font-bold text-white;
+    }
+    .stat-label {
+        @apply text-white/80 text-sm;
+    }
+
+    /* Search bar */
+    .search-global {
+        @apply w-full pl-10 pr-4 py-2 text-sm bg-gray-100 border border-transparent rounded-full focus:outline-none focus:bg-white focus:border-[#52B788] transition-all duration-200;
+    }
+}
+
+/* ===== Hero gradient overlay ===== */
+.hero-overlay {
+    background: linear-gradient(
+        135deg,
+        rgba(45, 106, 79, 0.92) 0%,
+        rgba(64, 145, 108, 0.80) 60%,
+        rgba(82, 183, 136, 0.60) 100%
+    );
+}
+
+/* ===== Animations ===== */
+@keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.7s ease-out forwards;
+}
+.animate-delay-200 { animation-delay: 0.2s; opacity: 0; }
+.animate-delay-400 { animation-delay: 0.4s; opacity: 0; }
+.animate-delay-600 { animation-delay: 0.6s; opacity: 0; }
+
+/* ===== Scrollbar custom ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #52B788; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2D6A4F; }

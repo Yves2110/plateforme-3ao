@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'title'   => 'Member Map',
+    'map'     => 'Map',
+    'network' => 'Network',
+    'network_title' => 'Actor Network',
+    'network_description' => 'Visualization of partnership links between agroecology organizations.',
+    'search_placeholder' => 'Search for an actor, city...',
+    'organisations_displayed' => 'organisations displayed',
+    'legend' => 'Legend',
+    'loading' => 'Loading…',
+    'no_results' => 'No actors match your filters.',
+    'no_geo_hint' => 'Actors without GPS coordinates do not appear on the map.',
+    'reset_filters' => 'Reset filters',
+    'close_detail' => 'Close',
+    'view_profile' => 'View full profile →',
+    'back_to_map' => 'Back to map',
+    'result' => 'result',
+    'results' => 'results',
+    'map_error' => 'Unable to load the map. Please refresh the page.',
+    'load_error' => 'Failed to load profile.',
+    'actors_links' => ':nodes actors · :links partnership links',
+    'network_empty' => 'No validated actors to display the network. Add actors and partnership links in the admin.',
+];

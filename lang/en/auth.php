@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'login'              => 'Log in',
+    'register'           => 'Create an account',
+    'logout'             => 'Log out',
+    'email'              => 'Email address',
+    'password'           => 'Password',
+    'password_confirm'   => 'Confirm password',
+    'name'               => 'Full name',
+    'remember'           => 'Remember me',
+    'forgot_password'    => 'Forgot your password?',
+    'reset_password'     => 'Reset password',
+    'send_reset_link'    => 'Send password reset link',
+    'no_account'         => 'Don\'t have an account?',
+    'already_account'    => 'Already have an account?',
+    'failed'             => 'These credentials do not match our records.',
+    'throttle'           => 'Too many login attempts. Please try again in :seconds seconds.',
+    'verified'           => 'Your email has been verified.',
+    'verify_email'       => 'Verify your email address',
+    'verify_notice'      => 'A verification link has been sent to your email address.',
+    'verify_resend'      => 'Resend verification email',
+    'profile'            => 'My profile',
+    'two_factor'         => 'Two-factor authentication',
+];

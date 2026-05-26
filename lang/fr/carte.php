@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'title'   => 'Carte des membres',
+    'map'     => 'Carte',
+    'network' => 'Réseau',
+    'network_title' => 'Réseau des acteurs',
+    'network_description' => 'Visualisation des liens de partenariat entre organisations agroécologiques.',
+    'search_placeholder' => 'Rechercher un acteur, ville...',
+    'organisations_displayed' => 'organisations affichées',
+    'legend' => 'Légende',
+    'loading' => 'Chargement…',
+    'no_results' => 'Aucun acteur ne correspond aux filtres.',
+    'no_geo_hint' => 'Les acteurs sans coordonnées GPS n\'apparaissent pas sur la carte.',
+    'reset_filters' => 'Réinitialiser les filtres',
+    'close_detail' => 'Fermer',
+    'view_profile' => 'Voir la fiche complète →',
+    'back_to_map' => 'Retour à la carte',
+    'result' => 'résultat',
+    'results' => 'résultats',
+    'map_error' => 'Impossible de charger la carte. Veuillez rafraîchir la page.',
+    'load_error' => 'Erreur de chargement de la fiche.',
+    'actors_links' => ':nodes acteurs · :links liens de partenariat',
+    'network_empty' => 'Aucun acteur validé pour afficher le réseau. Ajoutez des acteurs et des liens de partenariat dans l\'administration.',
+];

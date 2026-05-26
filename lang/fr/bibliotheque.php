@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'title'          => 'Bibliothèque de connaissances',
+    'subtitle'       => 'Ressources documentaires agroécologiques',
+    'search_placeholder' => 'Rechercher une ressource…',
+    'filter_type'    => 'Type de document',
+    'filter_lang'    => 'Langue',
+    'filter_theme'   => 'Thème',
+    'all_types'      => 'Tous les types',
+    'all_langs'      => 'Toutes les langues',
+    'type_pdf'       => 'PDF',
+    'type_video'     => 'Vidéo',
+    'type_article'   => 'Article',
+    'type_guide'     => 'Guide',
+    'type_rapport'   => 'Rapport',
+    'download'       => 'Télécharger',
+    'preview'        => 'Prévisualiser',
+    'validated'      => 'Validé',
+    'pending'        => 'En attente de validation',
+    'no_results'     => 'Aucune ressource ne correspond à votre recherche.',
+    'read_online'    => 'Lire en ligne',
+    'pages'          => ':count pages',
+    'submitted_by'   => 'Soumis par :name',
+];

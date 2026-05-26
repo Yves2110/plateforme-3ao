@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'title'          => 'Knowledge Library',
+    'subtitle'       => 'Agroecological documentary resources',
+    'search_placeholder' => 'Search for a resource…',
+    'filter_type'    => 'Document type',
+    'filter_lang'    => 'Language',
+    'filter_theme'   => 'Theme',
+    'all_types'      => 'All types',
+    'all_langs'      => 'All languages',
+    'type_pdf'       => 'PDF',
+    'type_video'     => 'Video',
+    'type_article'   => 'Article',
+    'type_guide'     => 'Guide',
+    'type_rapport'   => 'Report',
+    'download'       => 'Download',
+    'preview'        => 'Preview',
+    'validated'      => 'Validated',
+    'pending'        => 'Pending validation',
+    'no_results'     => 'No resources match your search.',
+    'read_online'    => 'Read online',
+    'pages'          => ':count pages',
+    'submitted_by'   => 'Submitted by :name',
+];
