@@ -91,4 +91,37 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Resource::class, 'user_id');
     }
+
+    public function canValidateRegistrations(): bool
+    {
+        if ($this->hasRole(['super_admin', 'moderateur'])) {
+            return true;
+        }
+
+        return $this->can('valider-inscriptions') || $this->can('administrer-utilisateurs');
+    }
+
+    public function canAccessBackOffice(): bool
+    {
+        if ($this->hasRole(['super_admin', 'moderateur'])) {
+            return true;
+        }
+
+        $backOfficePermissions = [
+            'publier-bibliotheque',
+            'moderer-forum',
+            'gerer-carte',
+            'soumettre-acteur',
+            'creer-evenements',
+            'gerer-rss',
+            'publier-actualites',
+            'administrer-utilisateurs',
+            'acceder-statistiques',
+            'contribuer-multimedia',
+            'gerer-newsletter',
+            'gerer-formations',
+        ];
+
+        return $this->hasAnyPermission($backOfficePermissions);
+    }
 }

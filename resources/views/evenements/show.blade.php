@@ -13,6 +13,21 @@
     </div>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
+        @endif
+
+        <x-public-manage-bar
+            label="Événements"
+            :permissions="['creer-evenements', 'administrer-utilisateurs']"
+            :create-route="route('admin.evenements.create')"
+            :list-route="route('admin.evenements.index')"
+            :item="$event"
+            :edit-route="route('admin.evenements.edit', $event)"
+            :toggle-route="route('contenu.evenements.toggle', $event)"
+            published-key="is_validated"
+        />
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
             {{-- ===== Contenu principal ===== --}}

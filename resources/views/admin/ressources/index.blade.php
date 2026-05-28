@@ -26,6 +26,7 @@
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Titre</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Type</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Langue</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Thématique</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Statut</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Date</th>
                     <th class="px-5 py-3"></th>
@@ -39,6 +40,7 @@
                             <span class="px-2 py-0.5 text-xs font-semibold bg-purple-100 text-purple-700 rounded-full uppercase">{{ $r->type }}</span>
                         </td>
                         <td class="px-5 py-3 text-gray-600 uppercase text-xs">{{ $r->language }}</td>
+                        <td class="px-5 py-3 text-gray-600 text-xs max-w-[8rem] truncate">{{ $r->tags->first()?->name ?? '—' }}</td>
                         <td class="px-5 py-3">
                             <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $r->is_validated ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700' }}">
                                 {{ $r->is_validated ? 'Validé' : 'En attente' }}
@@ -54,7 +56,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">Aucune ressource.</td></tr>
+                    <tr><td colspan="7" class="px-5 py-10 text-center text-gray-400">Aucune ressource.</td></tr>
                 @endforelse
             </tbody>
         </table>

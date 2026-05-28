@@ -1,6 +1,22 @@
 <x-app-layout>
     <x-slot name="title">{{ $actor->name }}</x-slot>
 
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
+        @endif
+        <x-public-manage-bar
+            label="Fiche acteur"
+            :permissions="['gerer-carte', 'soumettre-acteur', 'administrer-utilisateurs']"
+            :create-route="route('admin.acteurs.create')"
+            :list-route="route('admin.acteurs.index')"
+            :item="$actor"
+            :edit-route="route('admin.acteurs.edit', $actor)"
+            :toggle-route="route('contenu.acteurs.toggle', $actor)"
+            published-key="is_validated"
+        />
+    </div>
+
     {{-- ===== Hero ===== --}}
     <div class="bg-gradient-to-r from-[#2D6A4F] to-[#40916C] py-10">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

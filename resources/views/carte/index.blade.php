@@ -24,6 +24,18 @@
         },
     })" x-init="init()">
 
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+            @if(session('success'))
+                <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
+            @endif
+            <x-public-manage-bar
+                label="Carte des acteurs"
+                :permissions="['gerer-carte', 'soumettre-acteur', 'administrer-utilisateurs']"
+                :create-route="route('admin.acteurs.create')"
+                :list-route="route('admin.acteurs.index')"
+            />
+        </div>
+
         {{-- Header avec filtres --}}
         <div class="bg-gradient-to-r from-[#2D6A4F] to-[#40916C] py-6">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

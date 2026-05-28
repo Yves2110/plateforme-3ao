@@ -45,9 +45,9 @@ class SecurityHeaders
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net cdnjs.cloudflare.com unpkg.com",
             "style-src 'self' 'unsafe-inline' fonts.googleapis.com unpkg.com",
             "font-src 'self' fonts.gstatic.com",
-            "img-src 'self' data: blob: *.openstreetmap.org tile.openstreetmap.org *.basemaps.cartocdn.com *.cartocdn.com",
+            "img-src 'self' data: blob: images.unsplash.com *.openstreetmap.org tile.openstreetmap.org *.basemaps.cartocdn.com *.cartocdn.com",
             "frame-src 'self' www.youtube.com player.vimeo.com",
-            "connect-src 'self' nominatim.openstreetmap.org overpass-api.de",
+            "connect-src 'self' blob: cdnjs.cloudflare.com nominatim.openstreetmap.org overpass-api.de",
         ]);
     }
 }

@@ -65,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('admin.layouts.admin', \App\View\Composers\AdminSidebarComposer::class);
+        View::composer('layouts.app', \App\View\Composers\FeaturedEventComposer::class);
 
         Gate::before(function ($user, $ability) {
             return $user->hasRole('super_admin') ? true : null;

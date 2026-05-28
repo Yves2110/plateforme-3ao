@@ -15,6 +15,7 @@ class Resource extends Model
         'type',
         'abstract',
         'file_path',
+        'video_url',
         'thumbnail',
         'language',
         'country',
@@ -42,5 +43,33 @@ class Resource extends Model
     public function downloads()
     {
         return $this->hasMany(Download::class);
+    }
+
+    public function getEmbedUrlAttribute(): ?string
+    {
+        if (! $this->video_url) {
+            return null;
+        }
+
+        $url = $this->video_url;
+
+        if (str_contains($url, 'youtube.com') || str_contains($url, 'youtu.be')) {
+            preg_match('/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $url, $m);
+
+            return isset($m[1]) ? 'https://www.youtube.com/embed/'.$m[1] : null;
+        }
+
+        if (str_contains($url, 'vimeo.com')) {
+            preg_match('/vimeo\.com\/(\d+)/', $url, $m);
+
+            return isset($m[1]) ? 'https://player.vimeo.com/video/'.$m[1] : null;
+        }
+
+        return $url;
+    }
+
+    public function isVideoType(): bool
+    {
+        return $this->type === 'Vidéo';
     }
 }

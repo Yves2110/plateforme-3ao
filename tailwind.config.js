@@ -48,4 +48,13 @@ export default {
     },
 
     plugins: [forms, typography],
+
+    // Classes générées dynamiquement (badges actualités via PHP / composants)
+    safelist: [
+        'badge-annonce',
+        'badge-evenement',
+        'badge-publication',
+        'badge-actualite',
+        'badge-financement',
+    ],
 };

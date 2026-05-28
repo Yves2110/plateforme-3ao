@@ -32,6 +32,17 @@
 
     <div class="max-w-6xl mx-auto px-4 py-10">
 
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
+        @endif
+
+        <x-public-manage-bar
+            label="Formations"
+            :permissions="['gerer-formations', 'administrer-utilisateurs']"
+            :create-route="route('admin.formations.create')"
+            :list-route="route('admin.formations.index')"
+        />
+
         @if($formations->isEmpty())
             <div class="text-center py-16 text-gray-400">
                 <p class="text-4xl mb-3">📭</p>
@@ -42,8 +53,17 @@
         <p class="text-sm text-gray-500 mb-6">{{ $formations->total() }} {{ __('formation.results_found') }}</p>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             @foreach($formations as $formation)
+            <div class="relative">
+            @if(!empty($canManage))
+                <x-public-manage-card-actions
+                    :item="$formation"
+                    :toggle-route="route('contenu.formations.toggle', $formation)"
+                    published-key="is_validated"
+                    :edit-route="route('admin.formations.edit', $formation)"
+                />
+            @endif
             <a href="{{ route('formation.show', $formation->slug) }}"
-               class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group flex flex-col">
+               class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group flex flex-col block">
                 @if($formation->thumbnail)
                     <img src="{{ asset('storage/'.$formation->thumbnail) }}" class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" alt="">
                 @else
@@ -78,6 +98,7 @@
                     </div>
                 </div>
             </a>
+            </div>
             @endforeach
         </div>
         <div class="mt-8">{{ $formations->links() }}</div>

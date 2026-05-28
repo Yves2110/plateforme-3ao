@@ -27,4 +27,10 @@ return [
     'registration_success' => 'Your registration has been saved successfully!',
     'registration_full'    => 'Sorry, this event is full.',
     'already_registered'   => 'You are already registered for this event.',
+    'status_expired'       => 'Expired',
+    'status_today'         => 'Today',
+    'status_tomorrow'      => 'Tomorrow',
+    'status_in_days'       => 'In :days days',
+    'hero_reminder'        => 'Don\'t miss this event',
+    'see_event'            => 'View event',
 ];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Actor;
 use App\Models\ActorLink;
+use App\Support\PublicContentGate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -36,7 +37,9 @@ class CarteController extends Controller
             $t => $typeColorMap[$t] ?? '#52B788',
         ])->all();
 
-        return view('carte.index', compact('actorCount', 'types', 'countries', 'legendTypes'));
+        $canManage = PublicContentGate::can(['gerer-carte', 'soumettre-acteur', 'administrer-utilisateurs']);
+
+        return view('carte.index', compact('actorCount', 'types', 'countries', 'legendTypes', 'canManage'));
     }
 
     public function acteurs(Request $request)
@@ -118,15 +121,19 @@ class CarteController extends Controller
 
     public function acteur(Request $request, string $slugOrId)
     {
+        $canManage = PublicContentGate::can(['gerer-carte', 'soumettre-acteur', 'administrer-utilisateurs']);
+
+        $actorQuery = Actor::query()->when(! $canManage, fn ($q) => $q->where('is_validated', true));
+
         $actor = is_numeric($slugOrId)
-            ? Actor::where('id', $slugOrId)->where('is_validated', true)->firstOrFail()
-            : Actor::where('slug', $slugOrId)->where('is_validated', true)->firstOrFail();
+            ? (clone $actorQuery)->where('id', $slugOrId)->firstOrFail()
+            : (clone $actorQuery)->where('slug', $slugOrId)->firstOrFail();
 
         // Si format=html, retourner seulement le contenu principal (sans layout)
         if ($request->query('format') === 'html') {
             return view('carte._acteur-detail', compact('actor'));
         }
 
-        return view('carte.acteur', compact('actor'));
+        return view('carte.acteur', compact('actor', 'canManage'));
     }
 }

@@ -79,6 +79,7 @@ class DemoSeeder extends Seeder
             [
                 'title'        => 'Guide des pratiques agroécologiques en zone sahélienne',
                 'slug'         => 'guide-pratiques-agroecologiques-sahelien',
+                'theme'        => 'Agroécologie',
                 'type'         => 'Guide technique',
                 'abstract'     => 'Ce guide présente les principales pratiques agroécologiques adaptées aux conditions climatiques sahéliennes, avec des fiches pratiques pour les agriculteurs.',
                 'author'       => 'CIRAD / 3AO',
@@ -90,6 +91,7 @@ class DemoSeeder extends Seeder
             [
                 'title'        => 'Étude de cas : semences paysannes au Mali',
                 'slug'         => 'etude-cas-semences-paysannes-mali',
+                'theme'        => 'Semences paysannes',
                 'type'         => 'Étude de cas',
                 'abstract'     => 'Retour d\'expérience sur la conservation et la valorisation des semences paysannes traditionnelles dans la région de Ségou, Mali.',
                 'author'       => 'ROPPA / CNOP-Mali',
@@ -101,6 +103,7 @@ class DemoSeeder extends Seeder
             [
                 'title'        => 'Agroecology Transition in West Africa: Research Results',
                 'slug'         => 'agroecology-transition-west-africa-research',
+                'theme'        => 'Changement climatique',
                 'type'         => 'Publication scientifique',
                 'abstract'     => 'This publication presents the main research results on agroecological transition in West Africa from 2020 to 2024.',
                 'author'       => 'ARAA / CEDEAO',
@@ -111,7 +114,15 @@ class DemoSeeder extends Seeder
             ],
         ];
         foreach ($ressources as $data) {
-            Resource::firstOrCreate(['slug' => $data['slug']], $data);
+            $themeName = $data['theme'] ?? null;
+            unset($data['theme']);
+            $resource = Resource::firstOrCreate(['slug' => $data['slug']], $data);
+            if ($themeName) {
+                $tag = Tag::where('name', $themeName)->first();
+                if ($tag) {
+                    $resource->tags()->sync([$tag->id]);
+                }
+            }
         }
 
         // ===== Événements =====

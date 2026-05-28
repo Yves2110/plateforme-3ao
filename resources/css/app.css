@@ -60,10 +60,27 @@ h1, h2, h3, h4, h5, h6 {
     .badge {
         @apply inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full uppercase tracking-wide;
     }
-    .badge-annonce    { @apply bg-blue-100 text-blue-700; }
-    .badge-evenement  { @apply bg-purple-100 text-purple-700; }
-    .badge-publication { @apply bg-green-100 text-green-700; }
-    .badge-actualite  { @apply bg-orange-100 text-orange-700; }
+    /* Couleurs explicites : les classes sont aussi en safelist (génération PHP dynamique) */
+    .badge-annonce {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+    }
+    .badge-evenement {
+        background-color: #f3e8ff;
+        color: #7e22ce;
+    }
+    .badge-publication {
+        background-color: #dcfce7;
+        color: #15803d;
+    }
+    .badge-actualite {
+        background-color: #ffedd5;
+        color: #c2410c;
+    }
+    .badge-financement {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
 
     /* Section headings */
     .section-title {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Actualite;
 use App\Services\UploadService;
+use App\Support\ActualiteCategories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -12,13 +13,19 @@ class AdminActualiteController extends Controller
 {
     public function index(Request $request)
     {
+        $categoryFilter = ActualiteCategories::parseFilterInput($request->categories);
+
         $actualites = Actualite::with('author')
-            ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
+            ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%"))
+            ->when($categoryFilter !== [], fn ($q) => $q->whereIn(
+                'category',
+                ActualiteCategories::storageValuesForFilter($categoryFilter)
+            ))
             ->latest()
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.actualites.index', compact('actualites'));
+        return view('admin.actualites.index', compact('actualites', 'categoryFilter'));
     }
 
     public function create()
@@ -30,12 +37,13 @@ class AdminActualiteController extends Controller
     {
         $data = $request->validate([
             'title'        => 'required|string|max:255',
-            'category'     => 'required|string|max:100',
+            'category'     => ['required', ActualiteCategories::categoryRule()],
             'content'      => 'required|string',
             'thumbnail'    => 'nullable|image|max:4096',
             'is_published' => 'boolean',
         ]);
 
+        $data['category']     = ActualiteCategories::normalizeLabel($data['category']);
         $data['slug']         = Str::slug($data['title']) . '-' . Str::random(5);
         $data['user_id']      = auth()->id();
         $data['is_published'] = $request->boolean('is_published');
@@ -59,12 +67,13 @@ class AdminActualiteController extends Controller
     {
         $data = $request->validate([
             'title'        => 'required|string|max:255',
-            'category'     => 'required|string|max:100',
+            'category'     => ['required', ActualiteCategories::categoryRule()],
             'content'      => 'required|string',
             'thumbnail'    => 'nullable|image|max:4096',
             'is_published' => 'boolean',
         ]);
 
+        $data['category']     = ActualiteCategories::normalizeLabel($data['category']);
         $data['is_published'] = $request->boolean('is_published');
         if ($data['is_published'] && !$actualite->published_at) {
             $data['published_at'] = now();

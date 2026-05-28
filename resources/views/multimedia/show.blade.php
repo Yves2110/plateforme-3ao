@@ -21,6 +21,21 @@
     </div>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
+        @endif
+
+        <x-public-manage-bar
+            label="Multimédia"
+            :permissions="['contribuer-multimedia', 'administrer-utilisateurs']"
+            :create-route="route('admin.medias.create')"
+            :list-route="route('admin.medias.index')"
+            :item="$item"
+            :edit-route="route('admin.medias.edit', $item)"
+            :toggle-route="route('contenu.medias.toggle', $item)"
+            published-key="is_published"
+        />
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
             {{-- ===== Contenu principal ===== --}}
@@ -87,7 +102,11 @@
                 {{-- ===== GALERIE ===== --}}
                 @elseif($item->type === 'gallery')
                     @php $photos = $item->photos ?? collect(); @endphp
-                    @if($photos->count())
+                    @if($photos->isEmpty())
+                        <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+                            Cette galerie ne contient pas encore d’images. Ajoutez-en depuis l’administration (type Galerie, upload multiple).
+                        </div>
+                    @elseif($photos->count())
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6" id="gallery-grid">
                             @foreach($photos as $idx => $photo)
                                 <button onclick="openLightbox({{ $idx }})"

@@ -37,8 +37,10 @@
                     </a>
                 @endforeach
             </div>
-            @if(auth()->user()->hasAnyPermission(['publier-bibliotheque', 'soumettre-acteur', 'gerer-carte', 'creer-evenements', 'contribuer-multimedia', 'publier-actualites', 'moderer-forum', 'gerer-rss', 'administrer-utilisateurs']))
+            @if(auth()->user()->canAccessBackOffice())
                 <a href="{{ route('admin.dashboard') }}" class="inline-block mt-4 text-sm text-[#2D6A4F] font-semibold hover:underline">Accéder au back-office →</a>
+            @elseif(auth()->user()->canValidateRegistrations())
+                <a href="{{ route('admin.users.pending') }}" class="inline-block mt-4 text-sm text-[#2D6A4F] font-semibold hover:underline">Valider les inscriptions en attente →</a>
             @endif
         </div>
         @endif

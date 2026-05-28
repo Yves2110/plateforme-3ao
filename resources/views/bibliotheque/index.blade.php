@@ -34,6 +34,14 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        @include('bibliotheque._admin-bar')
+
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="flex flex-col lg:flex-row gap-8">
 
             {{-- ===== Sidebar filtres ===== --}}
@@ -48,7 +56,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ __('common.type') }}</label>
                             <div class="space-y-1.5">
-                                @foreach(['Guide technique', 'Étude de cas', 'Publication scientifique', 'Fiche projet', 'Vidéo', 'Ouvrage'] as $type)
+                                @foreach(config('bibliotheque.types') as $type)
                                     <label class="flex items-center gap-2 cursor-pointer group">
                                         <input type="radio" name="type" value="{{ $type }}"
                                                {{ request('type') === $type ? 'checked' : '' }}
@@ -67,7 +75,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Langue</label>
                             <div class="space-y-1.5">
-                                @foreach(['fr' => 'Français', 'en' => 'English'] as $code => $label)
+                                @foreach(config('bibliotheque.languages') as $code => $label)
                                     <label class="flex items-center gap-2 cursor-pointer group">
                                         <input type="radio" name="langue" value="{{ $code }}"
                                                {{ request('langue') === $code ? 'checked' : '' }}
@@ -82,7 +90,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Thématique</label>
                             <div class="space-y-1.5">
-                                @foreach(['Agroécologie', 'Semences paysannes', 'Eau & Sols', 'Politiques publiques', 'Changement climatique', 'Marchés & Filières'] as $theme)
+                                @foreach(config('bibliotheque.themes') as $theme)
                                     <label class="flex items-center gap-2 cursor-pointer group">
                                         <input type="radio" name="theme" value="{{ $theme }}"
                                                {{ request('theme') === $theme ? 'checked' : '' }}
@@ -131,8 +139,17 @@
 
                     @forelse($ressources as $r)
                         {{-- Carte grille --}}
-                        <div x-show="view === 'grid'"
-                             class="card group">
+                        <div x-show="view === 'grid'" class="relative">
+                        @if(!empty($canManage))
+                            <x-public-manage-card-actions
+                                :item="$r"
+                                :toggle-route="route('contenu.ressources.toggle', $r)"
+                                published-key="is_validated"
+                                :edit-route="route('admin.ressources.edit', $r)"
+                            />
+                        @endif
+                        <a href="{{ route('bibliotheque.show', $r->slug) }}"
+                           class="card group block cursor-pointer hover:shadow-md transition-shadow">
                             <div class="relative h-44 overflow-hidden bg-gradient-to-br from-[#52B788] to-[#2D6A4F]">
                                 @if($r->thumbnail)
                                     <img src="{{ asset('storage/'.$r->thumbnail) }}" alt="{{ $r->title }}"
@@ -151,7 +168,7 @@
                             </div>
                             <div class="p-4">
                                 <h3 class="font-semibold text-sm text-gray-900 group-hover:text-[#2D6A4F] transition-colors line-clamp-2 mb-1.5">
-                                    <a href="{{ route('bibliotheque.show', $r->slug) }}">{{ $r->title }}</a>
+                                    {{ $r->title }}
                                 </h3>
                                 @if($r->abstract)
                                     <p class="text-xs text-gray-500 line-clamp-2 mb-3">{{ $r->abstract }}</p>
@@ -168,11 +185,21 @@
                                     </div>
                                 </div>
                             </div>
+                        </a>
                         </div>
 
                         {{-- Vue liste --}}
-                        <div x-show="view === 'list'" x-cloak
-                             class="bg-white rounded-xl border border-gray-100 hover:border-[#52B788] hover:shadow-sm transition-all p-4 flex gap-4 group">
+                        <div x-show="view === 'list'" x-cloak class="relative">
+                        @if(!empty($canManage))
+                            <x-public-manage-card-actions
+                                :item="$r"
+                                :toggle-route="route('contenu.ressources.toggle', $r)"
+                                published-key="is_validated"
+                                :edit-route="route('admin.ressources.edit', $r)"
+                            />
+                        @endif
+                        <a href="{{ route('bibliotheque.show', $r->slug) }}"
+                           class="bg-white rounded-xl border border-gray-100 hover:border-[#52B788] hover:shadow-sm transition-all p-4 flex gap-4 group cursor-pointer block">
                             <div class="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-[#52B788] to-[#2D6A4F] shrink-0 flex items-center justify-center">
                                 @if($r->thumbnail)
                                     <img src="{{ asset('storage/'.$r->thumbnail) }}" alt="" class="w-full h-full object-cover">
@@ -185,7 +212,7 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-start justify-between gap-2 mb-1">
                                     <h3 class="font-semibold text-sm text-gray-900 group-hover:text-[#2D6A4F] transition-colors line-clamp-1">
-                                        <a href="{{ route('bibliotheque.show', $r->slug) }}">{{ $r->title }}</a>
+                                        {{ $r->title }}
                                     </h3>
                                     <span class="badge badge-publication shrink-0">{{ $r->type }}</span>
                                 </div>
@@ -201,11 +228,11 @@
                                 </div>
                             </div>
                             <div class="shrink-0 flex items-center">
-                                <a href="{{ route('bibliotheque.show', $r->slug) }}"
-                                   class="px-4 py-2 bg-[#F8F5F0] hover:bg-[#2D6A4F] hover:text-white text-[#2D6A4F] text-xs font-semibold rounded-lg transition-colors">
+                                <span class="px-4 py-2 bg-[#F8F5F0] group-hover:bg-[#2D6A4F] group-hover:text-white text-[#2D6A4F] text-xs font-semibold rounded-lg transition-colors">
                                     Consulter
-                                </a>
+                                </span>
                             </div>
+                        </a>
                         </div>
                     @empty
                         <div class="col-span-3 py-16 text-center text-gray-400">

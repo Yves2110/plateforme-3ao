@@ -2,35 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Media;
+use App\Support\PublicContentGate;
+use Illuminate\Http\Request;
 
 class MultimediaController extends Controller
 {
     public function index(Request $request)
     {
         $type = $request->get('type');
+        $canManage = PublicContentGate::can(['contribuer-multimedia', 'administrer-utilisateurs']);
 
-        $media = Media::published()
-            ->when($type, fn($q) => $q->byType($type))
+        $baseQuery = fn () => Media::query()->when(! $canManage, fn ($q) => $q->published());
+
+        $media = $baseQuery()
+            ->when($type, fn ($q) => $q->byType($type))
             ->orderByDesc('published_at')
             ->paginate(12)
             ->withQueryString();
 
         $counts = [
-            'all'     => Media::published()->count(),
-            'photo'   => Media::published()->byType('photo')->count(),
-            'video'   => Media::published()->byType('video')->count(),
-            'podcast' => Media::published()->byType('podcast')->count(),
-            'gallery' => Media::published()->byType('gallery')->count(),
+            'all'     => $baseQuery()->count(),
+            'photo'   => $baseQuery()->byType('photo')->count(),
+            'video'   => $baseQuery()->byType('video')->count(),
+            'podcast' => $baseQuery()->byType('podcast')->count(),
+            'gallery' => $baseQuery()->byType('gallery')->count(),
         ];
 
-        return view('multimedia.index', compact('media', 'type', 'counts'));
+        return view('multimedia.index', compact('media', 'type', 'counts', 'canManage'));
     }
 
     public function show(string $slug)
     {
-        $item = Media::published()->where('slug', $slug)->firstOrFail();
+        $canManage = PublicContentGate::can(['contribuer-multimedia', 'administrer-utilisateurs']);
+
+        $item = Media::query()
+            ->with('photos')
+            ->when(! $canManage, fn ($q) => $q->published())
+            ->where('slug', $slug)
+            ->firstOrFail();
         $item->increment('views');
 
         $related = Media::published()
@@ -40,6 +50,6 @@ class MultimediaController extends Controller
             ->take(4)
             ->get();
 
-        return view('multimedia.show', compact('item', 'related'));
+        return view('multimedia.show', compact('item', 'related', 'canManage'));
     }
 }

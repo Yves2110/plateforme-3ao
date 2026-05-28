@@ -78,6 +78,7 @@
                             <a href="{{ $item->link }}" target="_blank" class="text-xs text-[#2D6A4F] hover:underline mt-1 inline-block">Voir la source →</a>
                         </div>
                         <div class="flex gap-2 shrink-0">
+                            <p class="text-xs text-gray-500 mb-2">La publication crée une actualité visible sur le site public, avec la mention « Syndiqué depuis {{ $item->source?->name }} ».</p>
                             <form action="{{ route('admin.rss.items.approve', $item) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="px-3 py-1.5 text-xs font-semibold bg-[#2D6A4F] text-white rounded-lg">Publier</button>

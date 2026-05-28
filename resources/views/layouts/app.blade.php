@@ -34,6 +34,8 @@
     <!-- Navigation -->
     @include('components.navbar')
 
+    <x-featured-event-banner />
+
     @stack('before-livewire')
 
     <!-- Page Content -->

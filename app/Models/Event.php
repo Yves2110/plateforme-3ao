@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\EventSchedule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -32,4 +33,10 @@ class Event extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function schedule(): EventSchedule
+    {
+        return EventSchedule::for($this);
+    }
 }
+

@@ -2,13 +2,12 @@
 
 namespace App\Actions\Fortify;
 
-use App\Mail\NewUserRegistrationMail;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\RegistrationNotificationService;
 use App\Rules\NotDisposableEmail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -51,11 +50,7 @@ class CreateNewUser implements CreatesNewUsers
                 $user->forceFill(['approval_status' => 'pending'])->save();
                 $this->createTeam($user);
 
-                // Notifier les admins par email
-                $admins = User::role(['super_admin', 'admin'])->get();
-                foreach ($admins as $admin) {
-                    Mail::to($admin->email)->send(new NewUserRegistrationMail($user));
-                }
+                app(RegistrationNotificationService::class)->notifyNewRegistration($user);
             });
         });
     }

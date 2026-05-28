@@ -12,13 +12,30 @@
     @stack('styles')
 </head>
 <body class="h-full font-sans text-[#1A1A2E]" x-data="{ sidebarOpen: false }">
+@php
+    $u = auth()->user();
+    $isSuperAdmin = $u && $u->hasRole('super_admin');
+    $canValidateRegistrations = $u && $u->canValidateRegistrations();
+    $canAccessBackOffice = $u && $u->canAccessBackOffice();
+    $adminHomeRoute = $canAccessBackOffice ? route('admin.dashboard') : route('admin.users.pending');
+
+    $navItem = function ($route, $label, $icon, $badge = null, $highlight = false) {
+        $active = request()->routeIs(rtrim($route, '.index') . '*') || request()->routeIs($route);
+        $activeClass = $active ? 'bg-[#52B788]/20 text-[#52B788]' : 'text-white/60 hover:text-white hover:bg-white/5';
+        return compact('route', 'label', 'icon', 'badge', 'active', 'activeClass', 'highlight');
+    };
+
+    $section = function ($title) {
+        return '<p class="px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-white/30">' . $title . '</p>';
+    };
+@endphp
 
 <div class="flex h-full">
 
     {{-- ===== Sidebar ===== --}}
     <aside class="hidden lg:flex lg:flex-col w-64 bg-[#1A1A2E] shrink-0 fixed inset-y-0 left-0 z-50">
         {{-- Logo --}}
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-6 py-5 border-b border-white/10 hover:bg-white/5 transition-colors">
+        <a href="{{ $adminHomeRoute }}" class="flex items-center gap-3 px-6 py-5 border-b border-white/10 hover:bg-white/5 transition-colors">
             <x-logo size="sm" class="!gap-2" />
             <div class="min-w-0">
                 <p class="text-white font-display font-bold text-sm leading-none">Back-office</p>
@@ -26,25 +43,9 @@
             </div>
         </a>
 
-        {{-- Navigation --}}
-        @php
-            $u = auth()->user();
-            $isSuperAdmin = $u && $u->hasRole('super_admin');
+        <nav class="flex-1 min-h-0 px-3 py-3 space-y-0.5 overflow-y-auto">
 
-            // Helper closure pour rendre un item
-            $navItem = function($route, $label, $icon, $badge = null, $highlight = false) {
-                $active = request()->routeIs(rtrim($route, '.index') . '*') || request()->routeIs($route);
-                $activeClass = $active ? 'bg-[#52B788]/20 text-[#52B788]' : 'text-white/60 hover:text-white hover:bg-white/5';
-                return compact('route', 'label', 'icon', 'badge', 'active', 'activeClass', 'highlight');
-            };
-
-            $section = function($title) {
-                return '<p class="px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-white/30">' . $title . '</p>';
-            };
-        @endphp
-
-        <nav class="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
-
+            @if($canAccessBackOffice)
             {{-- ===== Pilotage ===== --}}
             {!! $section('Pilotage') !!}
             <a id="admin-nav-dashboard" href="{{ route('admin.dashboard') }}"
@@ -53,6 +54,22 @@
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 Tableau de bord
             </a>
+            @endif
+
+            @if($canValidateRegistrations && ! $canAccessBackOffice)
+            {!! $section('Validation') !!}
+            <a id="admin-nav-users-pending" href="{{ route('admin.users.pending') }}"
+               class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                      {{ request()->routeIs('admin.users.pending') ? 'bg-[#52B788]/20 text-[#52B788]' : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                <span class="flex items-center gap-3">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                    Inscriptions en attente
+                </span>
+                @if($adminCounts['users_pending'] > 0)
+                    <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold">{{ $adminCounts['users_pending'] }}</span>
+                @endif
+            </a>
+            @endif
 
             {{-- ===== Contenus ===== --}}
             @canany(['publier-actualites', 'publier-bibliotheque', 'creer-evenements', 'contribuer-multimedia', 'gerer-formations'])
@@ -63,6 +80,14 @@
             @can('administrer-utilisateurs')
                 {!! $section('Administration') !!}
 
+                <a id="admin-nav-hero-slides" href="{{ route('admin.hero-slides.index') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                          {{ request()->routeIs('admin.hero-slides.*', 'admin.home-partners.*') ? 'bg-[#52B788]/20 text-[#52B788]' : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Slider accueil
+                </a>
+
+                @if($canValidateRegistrations)
                 <a id="admin-nav-users-pending" href="{{ route('admin.users.pending') }}"
                    class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
                           {{ request()->routeIs('admin.users.pending') ? 'bg-[#52B788]/20 text-[#52B788]' : 'text-white/60 hover:text-white hover:bg-white/5' }}">
@@ -74,6 +99,7 @@
                         <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold">{{ $adminCounts['users_pending'] }}</span>
                     @endif
                 </a>
+                @endif
 
                 <a id="admin-nav-users" href="{{ route('admin.utilisateurs.index') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
@@ -220,8 +246,8 @@
             @endcan
         </nav>
 
-        {{-- Bas sidebar --}}
-        <div class="px-4 py-4 border-t border-white/10">
+        {{-- Bas sidebar (toujours visible, hors zone scroll) --}}
+        <div class="px-4 py-4 border-t border-white/10 shrink-0 bg-[#151528]">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-8 h-8 rounded-full bg-[#52B788] flex items-center justify-center text-white text-xs font-bold shrink-0">
                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 2)) }}
@@ -231,10 +257,24 @@
                     <p class="text-white/40 text-xs truncate">{{ auth()->user()->email }}</p>
                 </div>
             </div>
-            <a href="{{ route('home') }}" class="flex items-center gap-2 text-xs text-white/50 hover:text-white transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                Retour au site
-            </a>
+            <div class="flex flex-col gap-2">
+                <a href="{{ route('profile.show') }}" class="flex items-center gap-2 text-xs text-white/60 hover:text-white transition-colors">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Mon profil
+                </a>
+                <a href="{{ route('home') }}" class="flex items-center gap-2 text-xs text-white/60 hover:text-white transition-colors">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Retour au site
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="pt-1">
+                    @csrf
+                    <button type="submit"
+                            class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors shadow-sm">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
         </div>
     </aside>
 
@@ -252,20 +292,29 @@
                     @endif
                 </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 shrink-0">
                 <button type="button"
                         @click="window.dispatchEvent(new CustomEvent('admin-tutorial-restart'))"
-                        class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#2D6A4F] bg-[#F8F5F0] hover:bg-[#E8F0EB] rounded-lg transition-colors"
+                        class="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#2D6A4F] bg-[#F8F5F0] hover:bg-[#E8F0EB] rounded-lg transition-colors"
                         title="Ouvrir le guide d'utilisation du back-office">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span class="hidden sm:inline">Guide d'utilisation</span>
+                    <span>Guide</span>
                 </button>
-                <a href="{{ route('home') }}" class="hidden sm:flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#2D6A4F] transition-colors mr-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Retour au site
+                <a href="{{ route('home') }}" class="hidden lg:flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-[#2D6A4F] hover:bg-gray-50 rounded-lg transition-colors">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Site public
                 </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm"
+                            title="Se déconnecter">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        <span>Déconnexion</span>
+                    </button>
+                </form>
                 @yield('header-actions')
             </div>
         </header>

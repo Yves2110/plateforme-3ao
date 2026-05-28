@@ -27,6 +27,12 @@
             </div>
         @endif
 
+        <x-public-manage-bar
+            label="Forum — {{ $categoryName }}"
+            :permissions="['moderer-forum', 'administrer-utilisateurs']"
+            :list-route="route('admin.forum.index')"
+        />
+
         {{-- Threads épinglés --}}
         @php $pinned = $threads->filter(fn($t) => $t->is_pinned); @endphp
         @if($pinned->count())

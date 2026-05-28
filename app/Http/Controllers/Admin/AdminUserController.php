@@ -93,20 +93,34 @@ class AdminUserController extends Controller
         // Générer un mot de passe aléatoire
         $password = Str::random(12);
 
-        $user->update([
+        $user->forceFill([
             'approval_status' => 'approved',
             'approved_at' => now(),
             'approved_by' => auth()->id(),
+            'email_verified_at' => now(),
             'password' => Hash::make($password),
-        ]);
+        ])->save();
 
         // Attribuer le rôle contributeur par défaut
         $user->assignRole('contributeur');
 
-        // Envoyer l'email avec les credentials
-        Mail::to($user->email)->send(new UserApprovedMail($user, $password));
+        // Envoyer l'email avec les credentials (et ne pas afficher un faux succès si échec SMTP)
+        $mailSent = true;
+        try {
+            Mail::to($user->email)->send(new UserApprovedMail($user, $password));
+        } catch (\Throwable $e) {
+            $mailSent = false;
+            SecurityLogger::admin('user.approve_mail_failed', [
+                'target_user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         SecurityLogger::admin('user.approved', ['target_user_id' => $user->id]);
+
+        if (! $mailSent) {
+            return back()->with('warning', "L'utilisateur {$user->name} a été approuvé, mais l'email d'accès n'a pas pu être envoyé. Vérifiez la configuration mail.");
+        }
 
         return back()->with('success', "L'utilisateur {$user->name} a été approuvé et un email avec les accès a été envoyé.");
     }
@@ -119,10 +133,10 @@ class AdminUserController extends Controller
 
         abort_if($user->approval_status !== 'pending', 400, 'Cet utilisateur n\'est pas en attente de validation.');
 
-        $user->update([
+        $user->forceFill([
             'approval_status' => 'rejected',
             'rejection_reason' => $request->reason,
-        ]);
+        ])->save();
 
         SecurityLogger::admin('user.rejected', ['target_user_id' => $user->id]);
 

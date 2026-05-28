@@ -116,7 +116,12 @@
 
                 {{-- Auth --}}
                 @auth
-                    @php $u = auth()->user(); $isAdmin = $u && ($u->hasRole('super_admin') || $u->hasRole('moderateur')); @endphp
+                    @php
+                        $u = auth()->user();
+                        $isAdmin = $u && $u->canAccessBackOffice();
+                        $canValidateRegistrations = $u && $u->canValidateRegistrations();
+                        $adminMenuUrl = $isAdmin ? route('admin.dashboard') : ($canValidateRegistrations ? route('admin.users.pending') : null);
+                    @endphp
                     <div x-data="{ open: false }" class="relative hidden sm:block">
                         <button @click="open = !open" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-[#2D6A4F] rounded-full hover:bg-[#F8F5F0] transition-colors">
                             <div class="w-8 h-8 rounded-full bg-[#2D6A4F] text-white flex items-center justify-center text-xs font-bold">
@@ -133,10 +138,10 @@
                                 <p class="text-sm font-semibold text-gray-800 truncate">{{ $u->name }}</p>
                                 <p class="text-xs text-gray-500 truncate">{{ $u->email }}</p>
                             </div>
-                            @if($isAdmin)
-                                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-[#D4A017] hover:bg-[#F8F5F0]">
+                            @if($adminMenuUrl)
+                                <a href="{{ $adminMenuUrl }}" class="flex items-center gap-2 px-4 py-2 text-sm text-[#D4A017] hover:bg-[#F8F5F0]">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                                    {{ __('nav.admin') }}
+                                    {{ $canValidateRegistrations && ! $isAdmin ? 'Valider les inscriptions' : __('nav.admin') }}
                                 </a>
                             @endif
                             <a href="{{ route('membre.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">

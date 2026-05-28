@@ -40,6 +40,17 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
+        @endif
+
+        <x-public-manage-bar
+            label="Multimédia"
+            :permissions="['contribuer-multimedia', 'administrer-utilisateurs']"
+            :create-route="route('admin.medias.create')"
+            :list-route="route('admin.medias.index')"
+        />
+
         @if($media->isEmpty())
             <div class="py-20 text-center text-gray-400">
                 <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,8 +63,17 @@
             {{-- Grille adaptative selon le type --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 @foreach($media as $item)
+                    <div class="relative">
+                    @if(!empty($canManage))
+                        <x-public-manage-card-actions
+                            :item="$item"
+                            :toggle-route="route('contenu.medias.toggle', $item)"
+                            published-key="is_published"
+                            :edit-route="route('admin.medias.edit', $item)"
+                        />
+                    @endif
                     <a href="{{ route('multimedia.show', $item->slug) }}"
-                       class="group card overflow-hidden">
+                       class="group card overflow-hidden block">
 
                         {{-- Thumbnail --}}
                         <div class="relative overflow-hidden
@@ -116,6 +136,7 @@
                             </div>
                         </div>
                     </a>
+                    </div>
                 @endforeach
             </div>
 

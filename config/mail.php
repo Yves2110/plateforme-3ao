@@ -123,4 +123,9 @@ return [
         'name'    => env('MAIL_REPLY_TO_NAME', 'Plateforme agroécologique'),
     ],
 
+    /*
+    | Alerte inscription (secours) : notifiée en plus des validateurs habilités.
+    */
+    'registration_alert_address' => env('MAIL_REGISTRATION_ALERT'),
+
 ];

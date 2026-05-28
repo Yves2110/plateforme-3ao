@@ -76,14 +76,22 @@ class AdminRssController extends Controller
             return back();
         }
 
+        $item->loadMissing('source');
+
+        $excerpt = $item->description
+            ? '<p>'.nl2br(e($item->description)).'</p>'
+            : '';
+
         $actualite = Actualite::create([
-            'title'        => $item->title,
-            'slug'         => Str::slug($item->title) . '-' . Str::random(5),
-            'content'      => $item->description ?: '<p>Source : <a href="' . e($item->link) . '">' . e($item->link) . '</a></p>',
-            'category'     => 'Partenaire',
-            'is_published' => true,
-            'published_at' => $item->published_at ?? now(),
-            'user_id'      => auth()->id(),
+            'title'             => $item->title,
+            'slug'              => Str::slug(Str::limit($item->title, 80, '')).'-'.Str::random(5),
+            'content'           => $excerpt,
+            'category'          => 'Actualité',
+            'syndicated_source' => $item->source?->name,
+            'source_url'        => $item->link,
+            'is_published'      => true,
+            'published_at'      => $item->published_at ?? now(),
+            'user_id'           => auth()->id(),
         ]);
 
         $item->update([

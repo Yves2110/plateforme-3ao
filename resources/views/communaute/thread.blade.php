@@ -18,6 +18,15 @@
             <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
         @endif
 
+        <x-public-manage-bar
+            label="Discussion"
+            :permissions="['moderer-forum', 'administrer-utilisateurs']"
+            :list-route="route('admin.forum.index')"
+            :item="$forumThread"
+            :toggle-route="route('contenu.forum.threads.toggle', $forumThread)"
+            published-key="is_validated"
+        />
+
         {{-- ===== Thread principal ===== --}}
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-6">
             {{-- En-tête --}}

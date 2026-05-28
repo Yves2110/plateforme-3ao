@@ -7,6 +7,7 @@ use App\Models\ForumPoll;
 use App\Models\ForumPollVote;
 use App\Models\ForumReply;
 use App\Models\ForumThread;
+use App\Support\PublicContentGate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -42,14 +43,19 @@ class ForumController extends Controller
             ->take(3)
             ->get();
 
-        return view('communaute.index', compact('stats', 'recentThreads', 'pinnedThreads'));
+        $canManage = PublicContentGate::can(['moderer-forum', 'administrer-utilisateurs']);
+
+        return view('communaute.index', compact('stats', 'recentThreads', 'pinnedThreads', 'canManage'));
     }
 
     public function category(string $category)
     {
         abort_unless(array_key_exists($category, self::CATEGORIES), 404);
 
-        $threads = ForumThread::validated()
+        $canManage = PublicContentGate::can(['moderer-forum', 'administrer-utilisateurs']);
+
+        $threads = ForumThread::query()
+            ->when(! $canManage, fn ($q) => $q->validated())
             ->byCategory($category)
             ->with('author', 'replies')
             ->orderByDesc('is_pinned')
@@ -58,12 +64,15 @@ class ForumController extends Controller
 
         $categoryName = self::CATEGORIES[$category];
 
-        return view('communaute.category', compact('threads', 'category', 'categoryName'));
+        return view('communaute.category', compact('threads', 'category', 'categoryName', 'canManage'));
     }
 
     public function thread(string $category, string $thread)
     {
-        $forumThread = ForumThread::validated()
+        $canManage = PublicContentGate::can(['moderer-forum', 'administrer-utilisateurs']);
+
+        $forumThread = ForumThread::query()
+            ->when(! $canManage, fn ($q) => $q->validated())
             ->byCategory($category)
             ->where('slug', $thread)
             ->with('author', 'poll.votes')
@@ -84,7 +93,7 @@ class ForumController extends Controller
 
         $categoryName = self::CATEGORIES[$category] ?? $category;
 
-        return view('communaute.thread', compact('forumThread', 'replies', 'category', 'categoryName', 'userVote'));
+        return view('communaute.thread', compact('forumThread', 'replies', 'category', 'categoryName', 'userVote', 'canManage'));
     }
 
     public function create()

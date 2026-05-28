@@ -23,13 +23,19 @@
                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788]">
             </div>
 
+            @php
+                $currentCategory = \App\Support\ActualiteCategories::normalizeLabel(old('category', $actualite->category));
+            @endphp
             <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Catégorie <span class="text-red-500">*</span></label>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Type d'actualité <span class="text-red-500">*</span></label>
                 <select name="category" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788] bg-white">
-                    @foreach(['Agroécologie','Semences','Politique','Marché','Formation','Financement','International'] as $cat)
-                        <option value="{{ $cat }}" {{ old('category', $actualite->category) === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @foreach(\App\Support\ActualiteCategories::all() as $label => $meta)
+                        <option value="{{ $label }}" {{ $currentCategory === $label ? 'selected' : '' }}>
+                            {{ $label }} — {{ $meta['description'] }}
+                        </option>
                     @endforeach
                 </select>
+                <p class="text-xs text-gray-400 mt-1">Correspond au badge affiché sur le site (Actualité, Annonce, Événement, Financement, Publication).</p>
             </div>
 
             <div>

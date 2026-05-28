@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureAdmin::class,
             'admin.2fa' => \App\Http\Middleware\RequireAdminTwoFactor::class,
             'spam.protect' => \App\Http\Middleware\PreventSpamSubmission::class,
+            'approved' => \App\Http\Middleware\EnsureUserApproval::class,
+            'can.validate.registrations' => \App\Http\Middleware\EnsureCanValidateRegistrations::class,
         ]);
         $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\SecurityHeaders::class);

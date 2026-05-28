@@ -16,25 +16,7 @@ class EnsureAdmin
 
         $user = auth()->user();
 
-        if ($user->hasRole(['super_admin', 'moderateur'])) {
-            return $next($request);
-        }
-
-        $backOfficePermissions = [
-            'publier-bibliotheque',
-            'moderer-forum',
-            'gerer-carte',
-            'soumettre-acteur',
-            'creer-evenements',
-            'gerer-rss',
-            'publier-actualites',
-            'administrer-utilisateurs',
-            'acceder-statistiques',
-            'contribuer-multimedia',
-            'gerer-newsletter',
-        ];
-
-        if ($user->hasAnyPermission($backOfficePermissions)) {
+        if ($user->canAccessBackOffice()) {
             return $next($request);
         }
 

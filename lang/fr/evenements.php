@@ -27,4 +27,10 @@ return [
     'registration_success' => 'Votre inscription a été enregistrée avec succès !',
     'registration_full'    => 'Désolé, cet événement est complet.',
     'already_registered'   => 'Vous êtes déjà inscrit(e) à cet événement.',
+    'status_expired'       => 'Expiré',
+    'status_today'         => 'Aujourd\'hui',
+    'status_tomorrow'      => 'Demain',
+    'status_in_days'       => 'Dans :days jours',
+    'hero_reminder'        => 'Événement à ne pas manquer',
+    'see_event'            => 'Voir l\'événement',
 ];

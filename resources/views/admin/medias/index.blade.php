@@ -25,6 +25,7 @@
                 <tr>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Titre</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Type</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Images</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Source</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Vues</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Statut</th>
@@ -38,6 +39,15 @@
                         <td class="px-5 py-3">
                             @php $colors = ['video'=>'bg-red-100 text-red-700','podcast'=>'bg-purple-100 text-purple-700','gallery'=>'bg-blue-100 text-blue-700','photo'=>'bg-green-100 text-green-700']; @endphp
                             <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $colors[$m->type] ?? 'bg-gray-100 text-gray-600' }}">{{ ucfirst($m->type) }}</span>
+                        </td>
+                        <td class="px-5 py-3 text-gray-600 text-xs">
+                            @if($m->type === 'gallery')
+                                {{ $m->photos_count }} photo(s)
+                            @elseif($m->file_path)
+                                1 fichier
+                            @else
+                                —
+                            @endif
                         </td>
                         <td class="px-5 py-3 text-gray-500 text-xs truncate max-w-[120px]">{{ $m->source ?? '—' }}</td>
                         <td class="px-5 py-3 text-gray-600">{{ $m->views }}</td>
@@ -55,7 +65,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">Aucun média.</td></tr>
+                    <tr><td colspan="7" class="px-5 py-10 text-center text-gray-400">Aucun média.</td></tr>
                 @endforelse
             </tbody>
         </table>

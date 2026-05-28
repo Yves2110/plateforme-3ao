@@ -13,11 +13,16 @@
 
 @section('content')
 <div class="py-6">
-    <form method="GET" class="flex gap-3 mb-6">
+    <form method="GET" class="flex gap-3 mb-4">
         <input type="search" name="search" value="{{ request('search') }}" placeholder="Titre…"
                class="flex-1 max-w-sm px-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788]">
+        @foreach($categoryFilter ?? [] as $cat)
+            <input type="hidden" name="categories[]" value="{{ $cat }}">
+        @endforeach
         <button class="px-4 py-2 bg-[#2D6A4F] text-white text-sm font-medium rounded-xl">Rechercher</button>
     </form>
+
+    <x-actualite-category-filters :selected="$categoryFilter ?? []" mode="admin" :search="request('search')" />
 
     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <table class="w-full text-sm">
@@ -34,7 +39,9 @@
                 @forelse($actualites as $a)
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-5 py-3 font-medium text-gray-900 max-w-xs truncate">{{ $a->title }}</td>
-                        <td class="px-5 py-3 text-gray-600">{{ $a->category }}</td>
+                        <td class="px-5 py-3">
+                            <x-actualite-category-badge :actualite="$a" />
+                        </td>
                         <td class="px-5 py-3">
                             <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $a->is_published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                                 {{ $a->is_published ? 'Publié' : 'Brouillon' }}

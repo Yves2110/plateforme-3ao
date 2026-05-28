@@ -2,22 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Actualite;
-use App\Models\Resource;
 use App\Models\Event;
+use App\Models\Resource;
+use App\Services\HomePageService;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
+    public function __construct(
+        protected HomePageService $homePage
+    ) {}
+
     public function index()
     {
         $actualites = Actualite::where('is_published', true)
-            ->latest('published_at')
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
             ->take(5)
             ->get();
 
         $ressources = Resource::where('is_validated', true)
-            ->latest('published_at')
+            ->orderByDesc('published_at')
+            ->orderByDesc('created_at')
             ->take(3)
             ->get();
 
@@ -27,7 +34,21 @@ class HomeController extends Controller
             ->take(3)
             ->get();
 
-        return view('home', compact('actualites', 'ressources', 'evenements'));
+        $heroSlides       = $this->homePage->heroSlides();
+        $urgentHeroEvents = $this->homePage->eventsStartingWithinDays(7)->take(3)->get();
+        $partners         = $this->homePage->homePartners();
+        $stats      = $this->homePage->platformStats();
+        $statsLinks = $this->homePage->statsLinks();
+        return view('home', compact(
+            'actualites',
+            'ressources',
+            'evenements',
+            'heroSlides',
+            'urgentHeroEvents',
+            'partners',
+            'stats',
+            'statsLinks'
+        ));
     }
 
     public function widgetNews(Request $request)

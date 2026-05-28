@@ -13,6 +13,14 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        @include('bibliotheque._admin-bar', ['ressource' => $ressource])
+
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
             {{-- ===== Colonne gauche : métadonnées + actions ===== --}}
@@ -136,30 +144,49 @@
                     </div>
                 @endif
 
+                {{-- Vidéo intégrée (YouTube / Vimeo) --}}
+                @if($ressource->isVideoType() && $ressource->embed_url)
+                    <div class="mb-8">
+                        <h2 class="font-display font-semibold text-lg text-gray-800 mb-3">Vidéo</h2>
+                        <div class="relative w-full rounded-2xl overflow-hidden bg-black shadow-sm" style="padding-top:56.25%">
+                            <iframe class="absolute inset-0 w-full h-full"
+                                    src="{{ $ressource->embed_url }}"
+                                    title="{{ $ressource->title }}"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen></iframe>
+                        </div>
+                    </div>
+                @elseif($ressource->isVideoType() && $ressource->video_url)
+                    <div class="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+                        L’URL vidéo n’a pas pu être intégrée. Vérifiez le lien YouTube ou Vimeo dans l’administration.
+                    </div>
+                @endif
+
                 {{-- ===== Liseuse PDF (PDF.js) ===== --}}
                 @if($ressource->file_path && pathinfo($ressource->file_path, PATHINFO_EXTENSION) === 'pdf')
-                    <div class="mb-8">
+                    <div class="mb-8" id="pdf-viewer-root"
+                         data-pdf-url="{{ asset('storage/'.$ressource->file_path) }}">
                         <div class="flex items-center justify-between mb-3">
                             <h2 class="font-display font-semibold text-lg text-gray-800">Aperçu du document</h2>
-                            <div class="flex items-center gap-2" x-data="{ page: 1, totalPages: 1 }">
-                                <button @click="page = Math.max(1, page - 1)"
-                                        class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 disabled:opacity-40"
-                                        :disabled="page <= 1">
+                            <div class="flex items-center gap-2" id="pdf-controls" style="display:none;">
+                                <button type="button" id="pdf-prev"
+                                        class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 disabled:opacity-40">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                                 </button>
-                                <span class="text-sm text-gray-600">Page <span x-text="page"></span> / <span x-text="totalPages"></span></span>
-                                <button @click="page = Math.min(totalPages, page + 1)"
-                                        class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 disabled:opacity-40"
-                                        :disabled="page >= totalPages">
+                                <span class="text-sm text-gray-600">Page <span id="pdf-page-num">1</span> / <span id="pdf-page-total">1</span></span>
+                                <button type="button" id="pdf-next"
+                                        class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 disabled:opacity-40">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </button>
                             </div>
                         </div>
-                        <div class="bg-gray-100 rounded-2xl overflow-hidden border border-gray-200"
+                        <div class="bg-gray-100 rounded-2xl overflow-auto border border-gray-200 flex justify-center items-start min-h-[400px]"
                              id="pdf-container"
                              style="height: 600px;">
-                            <canvas id="pdf-canvas" class="w-full"></canvas>
+                            <canvas id="pdf-canvas" class="max-w-full shadow-sm"></canvas>
                         </div>
+                        <p id="pdf-error" class="hidden mt-2 text-sm text-red-600"></p>
                     </div>
                 @endif
 
@@ -194,36 +221,69 @@
     </div>
 
     @if($ressource->file_path && pathinfo($ressource->file_path, PATHINFO_EXTENSION) === 'pdf')
-    @push('scripts')
+    @push('before-livewire')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  @endpush
+    @push('scripts')
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof pdfjsLib === 'undefined') return;
 
-        const pdfUrl = '{{ asset("storage/" . $ressource->file_path) }}';
-        let pdfDoc = null;
-        let currentPage = 1;
-        const canvas = document.getElementById('pdf-canvas');
-        const ctx = canvas.getContext('2d');
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        async function renderPage(num) {
-            const page = await pdfDoc.getPage(num);
+            const root = document.getElementById('pdf-viewer-root');
+            if (! root) return;
+
+            const pdfUrl = root.dataset.pdfUrl;
+            const canvas = document.getElementById('pdf-canvas');
+            const ctx = canvas.getContext('2d');
             const container = document.getElementById('pdf-container');
-            const viewport = page.getViewport({ scale: container.clientWidth / page.getViewport({ scale: 1 }).width });
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            await page.render({ canvasContext: ctx, viewport }).promise;
-        }
+            const pageNumEl = document.getElementById('pdf-page-num');
+            const pageTotalEl = document.getElementById('pdf-page-total');
+            const controls = document.getElementById('pdf-controls');
+            const errorEl = document.getElementById('pdf-error');
+            const btnPrev = document.getElementById('pdf-prev');
+            const btnNext = document.getElementById('pdf-next');
 
-        pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
-            pdfDoc = doc;
-            document.querySelectorAll('[x-data]').forEach(el => {
-                if (el._x_dataStack) el._x_dataStack[0].totalPages = doc.numPages;
+            let pdfDoc = null;
+            let currentPage = 1;
+
+            async function renderPage() {
+                const page = await pdfDoc.getPage(currentPage);
+                const baseViewport = page.getViewport({ scale: 1 });
+                const containerWidth = container.clientWidth || 800;
+                const scale = Math.min(containerWidth / baseViewport.width, 1.5);
+                const viewport = page.getViewport({ scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({ canvasContext: ctx, viewport }).promise;
+                pageNumEl.textContent = currentPage;
+                btnPrev.disabled = currentPage <= 1;
+                btnNext.disabled = currentPage >= pdfDoc.numPages;
+            }
+
+            btnPrev.addEventListener('click', async () => {
+                if (currentPage <= 1) return;
+                currentPage--;
+                await renderPage();
             });
-            renderPage(1);
-        }).catch(err => {
-            console.warn('PDF non disponible :', err);
-            document.getElementById('pdf-container').innerHTML =
-                '<div class="flex items-center justify-center h-full text-gray-400 text-sm">Aperçu non disponible</div>';
+
+            btnNext.addEventListener('click', async () => {
+                if (currentPage >= pdfDoc.numPages) return;
+                currentPage++;
+                await renderPage();
+            });
+
+            pdfjsLib.getDocument(pdfUrl).promise.then(async (doc) => {
+                pdfDoc = doc;
+                pageTotalEl.textContent = doc.numPages;
+                controls.style.display = 'flex';
+                await renderPage();
+            }).catch((err) => {
+                console.warn('PDF non disponible :', err);
+                errorEl.textContent = 'Aperçu non disponible. Utilisez le bouton « Télécharger le PDF ».';
+                errorEl.classList.remove('hidden');
+            });
         });
     </script>
     @endpush

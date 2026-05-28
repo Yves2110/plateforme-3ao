@@ -15,6 +15,7 @@ class AdminGuideService
             'moderateur'         => 'modérateur',
             'contributeur'       => 'contributeur',
             'partenaire_externe' => 'partenaire externe',
+            'validateur_inscriptions' => 'validateur d\'inscriptions',
             default              => 'utilisateur du back-office',
         };
     }

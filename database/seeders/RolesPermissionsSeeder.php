@@ -27,6 +27,8 @@ class RolesPermissionsSeeder extends Seeder
             'telecharger-documents'     => 'Télécharger des documents',
             'contribuer-multimedia'     => 'Contribuer au multimédia',
             'gerer-newsletter'          => 'Gérer la newsletter',
+            'gerer-formations'          => 'Gérer les formations',
+            'valider-inscriptions'      => 'Valider les inscriptions membres',
         ];
 
         foreach ($permissions as $slug => $label) {
@@ -50,7 +52,12 @@ class RolesPermissionsSeeder extends Seeder
             'acceder-statistiques',
             'gerer-carte',
             'gerer-newsletter',
+            'valider-inscriptions',
         ]);
+
+        // Validateur d'inscriptions (accès limité : file d'attente + e-mail d'alerte)
+        $validateur = Role::firstOrCreate(['name' => 'validateur_inscriptions', 'guard_name' => 'web']);
+        $validateur->syncPermissions(['valider-inscriptions']);
 
         // Contributeur (Membre 3AO)
         $contributeur = Role::firstOrCreate(['name' => 'contributeur', 'guard_name' => 'web']);
@@ -75,13 +82,20 @@ class RolesPermissionsSeeder extends Seeder
         $adminUser = User::firstOrCreate(
             ['email' => 'admin@3ao.org'],
             [
-                'name'          => 'Administrateur 3AO',
-                'password'      => bcrypt('Admin3AO@2026!'),
+                'name'              => 'Administrateur 3AO',
+                'password'          => bcrypt('Admin3AO@2026!'),
                 'email_verified_at' => now(),
-                'organization'  => 'Secrétariat 3AO',
-                'country'       => 'Burkina Faso',
+                'approval_status'   => 'approved',
+                'approved_at'       => now(),
+                'organization'      => 'Secrétariat 3AO',
+                'country'           => 'Burkina Faso',
             ]
         );
+        $adminUser->forceFill([
+            'approval_status'   => 'approved',
+            'email_verified_at' => $adminUser->email_verified_at ?? now(),
+            'approved_at'       => $adminUser->approved_at ?? now(),
+        ])->save();
         $adminUser->assignRole('super_admin');
 
         $this->command->info('✅ Rôles, permissions et compte admin créés !');

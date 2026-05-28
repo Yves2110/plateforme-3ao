@@ -4,6 +4,21 @@
 
     <div class="max-w-4xl mx-auto px-4 py-10">
 
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
+        @endif
+
+        <x-public-manage-bar
+            label="Formations"
+            :permissions="['gerer-formations', 'administrer-utilisateurs']"
+            :create-route="route('admin.formations.create')"
+            :list-route="route('admin.formations.index')"
+            :item="$formation"
+            :edit-route="route('admin.formations.edit', $formation)"
+            :toggle-route="route('contenu.formations.toggle', $formation)"
+            published-key="is_validated"
+        />
+
         {{-- Breadcrumb --}}
         <nav class="text-xs text-gray-400 mb-6 flex items-center gap-1.5">
             <a href="{{ route('formation.index') }}" class="hover:text-[#2D6A4F] transition-colors">Hub Formation</a>

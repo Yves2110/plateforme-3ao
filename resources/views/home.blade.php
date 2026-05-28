@@ -1,93 +1,168 @@
 <x-app-layout>
     <x-slot name="title">{{ __('home.title') }}</x-slot>
 
+    @php
+        $sortedHero = $heroSlides->sortBy('sort_order')->values();
+        $firstHero = $sortedHero->first();
+        $otherHeroImages = $firstHero ? $sortedHero->slice(1) : $sortedHero;
+
+        $mapImageSlide = fn ($s) => [
+            'type' => 'image',
+            'url'  => $s->imageUrl(),
+            'alt'  => $s->alt_text ?? '',
+        ];
+
+        $eventSlides = $urgentHeroEvents->map(fn ($e) => [
+            'type'     => 'event',
+            'url'      => $e->schedule()->heroImageUrl(),
+            'title'    => $e->title,
+            'href'     => route('evenements.show', $e->slug),
+            'label'    => $e->schedule()->label(),
+            'typeName' => $e->type,
+            'date'     => $e->start_date->translatedFormat('d M Y'),
+            'location' => $e->is_online ? __('evenements.online') : trim(($e->location ? $e->location.', ' : '').($e->country ?? '')),
+        ]);
+
+        $heroSlidesJson = collect();
+        if ($firstHero) {
+            $heroSlidesJson->push($mapImageSlide($firstHero));
+        }
+        $heroSlidesJson = $heroSlidesJson
+            ->merge($eventSlides)
+            ->merge($otherHeroImages->map($mapImageSlide))
+            ->values();
+
+        if ($heroSlidesJson->isEmpty()) {
+            $heroSlidesJson = collect([['type' => 'image', 'url' => '', 'alt' => '']]);
+        }
+
+        $partnersJson = $partners->map(fn ($p) => [
+            'name' => $p->name,
+            'url'  => $p->logoUrl(),
+            'link' => $p->website_url,
+        ])->values();
+    @endphp
+
     {{-- =========================================================
-         SECTION 1 : HERO + ACTUALITÉS
+         SECTION 1 : HERO SLIDER + ACTUALITÉS
     ========================================================= --}}
-    <section class="relative min-h-[600px] lg:min-h-[640px] bg-[#2D6A4F] overflow-hidden">
+    <section class="relative bg-[#1A1A2E] overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-10 items-stretch">
 
-        {{-- Image de fond (agriculteurs) --}}
-        <div class="absolute inset-0">
-            <img src="{{ asset('images/hero-agriculture.jpg') }}"
-                 alt="Agriculteurs en Afrique de l'Ouest"
-                 class="w-full h-full object-cover object-center opacity-40"
-                 loading="eager">
-            <div class="absolute inset-0 hero-overlay"></div>
-        </div>
+                {{-- ===== Col gauche : Slider ===== --}}
+                <div class="lg:col-span-3 relative min-h-[480px] lg:min-h-[520px] rounded-2xl overflow-hidden"
+                     x-data="heroSlider(@js($heroSlidesJson), 6000)"
+                     x-init="start()">
 
-        {{-- Motif décoratif --}}
-        <div class="absolute top-0 right-0 w-96 h-96 opacity-5">
-            <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="200" cy="200" r="180" stroke="white" stroke-width="2"/>
-                <circle cx="200" cy="200" r="120" stroke="white" stroke-width="2"/>
-                <circle cx="200" cy="200" r="60" stroke="white" stroke-width="2"/>
-            </svg>
-        </div>
+                    {{-- Slides images + rappels événements (≤ 7 jours) --}}
+                    <template x-for="(slide, index) in slides" :key="index">
+                        <div x-show="current === index"
+                             x-transition:enter="transition-opacity duration-700 ease-out"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100"
+                             class="absolute inset-0">
+                            <template x-if="slide.type === 'event' && !slide.url">
+                                <div class="w-full h-full bg-gradient-to-br from-[#2D6A4F] to-[#40916C]"></div>
+                            </template>
+                            <template x-if="slide.url">
+                                <img :src="slide.url" :alt="slide.alt || slide.title"
+                                     class="w-full h-full object-cover"
+                                     loading="eager">
+                            </template>
+                            <div class="absolute inset-0"
+                                 :class="slide.type === 'event'
+                                     ? 'bg-gradient-to-t from-[#1A1A2E]/95 via-[#1A1A2E]/50 to-[#2D6A4F]/30'
+                                     : 'bg-gradient-to-r from-[#1A1A2E]/85 via-[#2D6A4F]/70 to-[#2D6A4F]/40'"></div>
+                            <div x-show="slide.type === 'event'"
+                                 class="absolute top-0 left-0 right-0 h-2 bg-[#F4C842] shadow-[0_2px_12px_rgba(244,200,66,0.6)] z-10"></div>
+                            <div x-show="slide.type === 'event'"
+                                 class="absolute bottom-0 left-0 right-0 z-10 p-6 sm:p-8">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4C842] text-[#1A1A2E] text-xs font-bold uppercase tracking-wide mb-3"
+                                      x-text="slide.label"></span>
+                                <p class="text-[#F4C842] text-xs font-semibold uppercase tracking-wider mb-1" x-text="slide.typeName"></p>
+                                <h2 class="font-display text-xl sm:text-2xl font-bold text-white leading-snug mb-2 max-w-lg" x-text="slide.title"></h2>
+                                <p class="text-white/80 text-sm mb-4" x-text="slide.date + ' · ' + slide.location"></p>
+                                <a :href="slide.href"
+                                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#D4A017] hover:bg-[#F4C842] text-white text-sm font-semibold rounded-xl transition-colors">
+                                    {{ __('evenements.see_event') }}
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </template>
 
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
+                    {{-- Contenu texte (toutes les images hero ; masqué sur les rappels événement) --}}
+                    <div class="relative z-10 h-full flex flex-col justify-center p-6 sm:p-8 lg:p-10"
+                         x-show="showHeroContent"
+                         x-transition.opacity>
+                        <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-4 py-1.5 text-white/90 text-sm mb-4 w-fit">
+                            <span class="w-2 h-2 bg-[#F4C842] rounded-full animate-pulse"></span>
+                            {{ __('home.badge') }}
+                        </div>
 
-                {{-- ===== Col gauche : Hero text (60%) ===== --}}
-                <div class="lg:col-span-3">
-                    {{-- Badge --}}
-                    <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-4 py-1.5 text-white/90 text-sm mb-6 animate-fade-in-up">
-                        <span class="w-2 h-2 bg-[#F4C842] rounded-full animate-pulse"></span>
-                        {{ __('home.badge') }}
+                        <h1 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-snug mb-4 max-w-xl">
+                            {{ __('home.hero_title') }}
+                        </h1>
+
+                        <p class="text-white/85 text-base sm:text-lg leading-relaxed mb-6 max-w-lg">
+                            {{ __('home.hero_subtitle') }}
+                        </p>
+
+                        <div class="flex flex-wrap gap-3 mb-8">
+                            <a href="{{ route('bibliotheque.index') }}" class="btn-primary">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                                {{ __('home.hero_cta_primary') }}
+                            </a>
+                            <a href="{{ route('communaute.index') }}" class="btn-secondary">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                {{ __('home.hero_cta_secondary') }}
+                            </a>
+                        </div>
+
+                        {{-- Chiffres clés (données réelles) --}}
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-white/10 backdrop-blur-sm rounded-2xl p-2"
+                             x-data="counters(@js($stats))" x-init="startCounting()">
+                            <a href="{{ $statsLinks['pays'] }}" class="stat-card hover:bg-white/10 transition-colors rounded-xl">
+                                <div class="stat-number" x-text="formatCount('pays')"></div>
+                                <div class="stat-label">{{ __('home.stats_countries') }}</div>
+                            </a>
+                            <a href="{{ $statsLinks['orgs'] }}" class="stat-card hover:bg-white/10 transition-colors rounded-xl">
+                                <div class="stat-number" x-text="formatCount('orgs')"></div>
+                                <div class="stat-label">{{ __('home.stats_actors') }}</div>
+                            </a>
+                            <a href="{{ $statsLinks['ressources'] }}" class="stat-card hover:bg-white/10 transition-colors rounded-xl">
+                                <div class="stat-number" x-text="formatCount('ressources')"></div>
+                                <div class="stat-label">{{ __('home.stats_resources') }}</div>
+                            </a>
+                            <a href="{{ $statsLinks['events'] }}" class="stat-card hover:bg-white/10 transition-colors rounded-xl">
+                                <div class="stat-number" x-text="formatCount('events')"></div>
+                                <div class="stat-label">{{ __('home.stats_events') }}</div>
+                            </a>
+                        </div>
                     </div>
 
-                    <h1 class="font-display text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-6 animate-fade-in-up animate-delay-200">
-                        {{ __('home.hero_title') }}
-                    </h1>
-
-                    <p class="text-white/85 text-lg leading-relaxed mb-8 max-w-xl animate-fade-in-up animate-delay-400">
-                        {{ __('home.hero_subtitle') }}
-                    </p>
-
-                    <div class="flex flex-wrap gap-3 mb-12 animate-fade-in-up animate-delay-600">
-                        <a href="{{ route('bibliotheque.index') }}" class="btn-primary">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                            {{ __('home.hero_cta_primary') }}
-                        </a>
-                        <a href="{{ route('communaute.index') }}" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            {{ __('home.hero_cta_secondary') }}
-                        </a>
-                    </div>
-
-                    {{-- ===== Compteurs statistiques (Alpine.js) ===== --}}
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-white/10 backdrop-blur-sm rounded-2xl p-2"
-                         x-data="counters()" x-init="startCounting()">
-                        <div class="stat-card">
-                            <svg class="w-6 h-6 text-[#F4C842] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/>
-                            </svg>
-                            <div class="stat-number" x-text="counts.pays + '+'"></div>
-                            <div class="stat-label">{{ __('home.stats_countries') }}</div>
+                    {{-- Contrôles slider --}}
+                    <div class="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between gap-3" x-show="slides.length > 1">
+                        <div class="flex gap-1.5">
+                            <template x-for="(_, index) in slides" :key="'dot-'+index">
+                                <button type="button" @click="goTo(index)"
+                                        class="h-2 rounded-full transition-all"
+                                        :class="current === index ? 'w-6 bg-[#F4C842]' : 'w-2 bg-white/50 hover:bg-white/80'"
+                                        :aria-label="'Slide ' + (index + 1)"></button>
+                            </template>
                         </div>
-                        <div class="stat-card">
-                            <svg class="w-6 h-6 text-[#F4C842] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <div class="stat-number" x-text="counts.orgs + '+'"></div>
-                            <div class="stat-label">{{ __('home.stats_actors') }}</div>
-                        </div>
-                        <div class="stat-card">
-                            <svg class="w-6 h-6 text-[#F4C842] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <div class="stat-number" x-text="counts.ressources + '+'"></div>
-                            <div class="stat-label">{{ __('home.stats_resources') }}</div>
-                        </div>
-                        <div class="stat-card">
-                            <svg class="w-6 h-6 text-[#F4C842] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <div class="stat-number" x-text="counts.events + '+'"></div>
-                            <div class="stat-label">{{ __('home.stats_events') }}</div>
+                        <div class="flex gap-1">
+                            <button type="button" @click="prev()" class="p-2 rounded-full bg-black/30 text-white hover:bg-black/50 backdrop-blur-sm" aria-label="Précédent">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <button type="button" @click="next()" class="p-2 rounded-full bg-black/30 text-white hover:bg-black/50 backdrop-blur-sm" aria-label="Suivant">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -110,7 +185,7 @@
                         {{-- Liste actualités --}}
                         <div class="divide-y divide-gray-50">
                             @forelse($actualites as $actu)
-                                <a href="#" class="flex gap-3 p-4 hover:bg-gray-50 transition-colors group">
+                                <a href="{{ route('actualites.show', $actu->slug) }}" class="flex gap-3 p-4 hover:bg-gray-50 transition-colors group">
                                     {{-- Thumbnail --}}
                                     <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-100">
                                         @if($actu->thumbnail)
@@ -128,10 +203,9 @@
                                     </div>
                                     {{-- Texte --}}
                                     <div class="flex-1 min-w-0">
-                                        <div class="mb-1">
-                                            <span class="badge badge-{{ strtolower($actu->category ?? 'actualite') }}">
-                                                {{ $actu->category ?? 'Actualité' }}
-                                            </span>
+                                        <div class="mb-1 flex flex-wrap items-center gap-1.5">
+                                            <x-actualite-category-badge :actualite="$actu" />
+                                            <x-syndicated-notice :actualite="$actu" size="xs" />
                                         </div>
                                         <p class="text-sm font-semibold text-gray-800 group-hover:text-[#2D6A4F] transition-colors line-clamp-2 leading-snug">
                                             {{ $actu->title }}
@@ -207,7 +281,7 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($ressources as $ressource)
-                    <a href="#" class="card group">
+                    <a href="{{ route('bibliotheque.show', $ressource->slug) }}" class="card group">
                         {{-- Thumbnail --}}
                         <div class="relative h-48 bg-gradient-to-br from-[#52B788] to-[#2D6A4F] overflow-hidden">
                             @if($ressource->thumbnail)
@@ -240,7 +314,7 @@
                                     </svg>
                                     {{ $ressource->author ?? 'Auteur inconnu' }}
                                 </span>
-                                <span>{{ $ressource->published_at?->format('Y') }}</span>
+                                <span>{{ ($ressource->published_at ?? $ressource->created_at)?->translatedFormat('d M Y') }}</span>
                             </div>
                         </div>
                     </a>
@@ -276,17 +350,28 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($evenements as $event)
-                    <div class="card group cursor-pointer">
-                        <div class="flex gap-0">
+                    @php $evStatus = $event->schedule()->status(); @endphp
+                    <a href="{{ route('evenements.show', $event->slug) }}"
+                       class="card group block cursor-pointer relative overflow-hidden
+                              {{ $evStatus === 'expired' ? 'opacity-75' : '' }}
+                              {{ $evStatus === 'soon' ? 'ring-2 ring-[#F4C842] ring-offset-2' : '' }}">
+                        @if($evStatus === 'soon')
+                            <div class="absolute top-0 left-0 right-0 h-1.5 bg-[#F4C842] z-10"></div>
+                        @endif
+                        <div class="flex gap-0 {{ $evStatus === 'expired' ? 'grayscale' : '' }}">
                             {{-- Date block --}}
-                            <div class="w-20 shrink-0 bg-[#2D6A4F] flex flex-col items-center justify-center py-5 text-white rounded-l-2xl">
+                            <div class="w-20 shrink-0 flex flex-col items-center justify-center py-5 text-white rounded-l-2xl
+                                        {{ $evStatus === 'expired' ? 'bg-gray-400' : 'bg-[#2D6A4F]' }}">
                                 <span class="font-display font-bold text-2xl leading-none">{{ $event->start_date->format('d') }}</span>
                                 <span class="text-xs uppercase tracking-wider mt-1 text-white/80">{{ $event->start_date->translatedFormat('M') }}</span>
                                 <span class="text-xs text-white/60">{{ $event->start_date->format('Y') }}</span>
                             </div>
                             {{-- Event info --}}
                             <div class="flex-1 p-4">
-                                <span class="badge badge-evenement mb-2 block w-fit">{{ $event->type ?? 'Événement' }}</span>
+                                <div class="flex flex-wrap items-center gap-2 mb-2">
+                                    <span class="badge badge-evenement">{{ $event->type ?? 'Événement' }}</span>
+                                    <x-event-schedule-badge :event="$event" />
+                                </div>
                                 <h3 class="font-semibold text-sm text-gray-900 group-hover:text-[#2D6A4F] transition-colors line-clamp-2 mb-2">
                                     {{ $event->title }}
                                 </h3>
@@ -299,7 +384,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @empty
                     <div class="lg:col-span-3 text-center py-12 text-gray-400">
                         <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,31 +437,173 @@
     </section>
 
     {{-- =========================================================
-         SECTION 6 : PARTENAIRES
+         SECTION 6 : PARTENAIRES (slider logos)
     ========================================================= --}}
-    <section class="py-14 bg-white border-t border-gray-100">
+    <section class="py-14 bg-white border-t border-gray-100"
+             x-data="partnerLogoSlider(@js($partnersJson), 4000)"
+             x-init="init(); start()">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <p class="text-center text-sm text-gray-400 font-medium uppercase tracking-widest mb-8">
                 {{ __('home.partners_title') }}
             </p>
-            <div class="flex flex-wrap items-center justify-center gap-8 md:gap-12">
-                @foreach(['ROPPA', 'CIRAD', 'FAO', 'GIZ', 'ARAA', 'CEDEAO', 'ENDA-PRONAT'] as $partenaire)
-                    <div class="flex items-center justify-center h-12 px-6 bg-gray-50 hover:bg-[#F8F5F0] rounded-xl transition-colors cursor-pointer">
-                        <span class="font-display font-bold text-gray-400 hover:text-[#2D6A4F] transition-colors text-sm tracking-wide">
-                            {{ $partenaire }}
-                        </span>
+
+            <template x-if="items.length === 0">
+                <p class="text-center text-gray-400 text-sm">Aucun partenaire configuré.</p>
+            </template>
+
+            <template x-if="items.length > 0">
+                <div class="relative">
+                    <div class="overflow-hidden">
+                        <div class="flex transition-transform duration-500 ease-in-out"
+                             :class="canSlide ? '' : 'justify-center'"
+                             :style="canSlide ? `transform: translateX(-${offsetPercent}%)` : ''">
+                            <template x-for="(partner, index) in items" :key="index">
+                                <div class="flex-shrink-0 px-3 sm:px-4" :style="`width: ${slotWidthPercent}%`">
+                                    <a :href="partner.link || '#'"
+                                       @click="!partner.link && $event.preventDefault()"
+                                       :target="partner.link ? '_blank' : null"
+                                       :rel="partner.link ? 'noopener noreferrer' : null"
+                                       class="flex items-center justify-center h-20 sm:h-24 bg-gray-50 hover:bg-[#F8F5F0] rounded-xl transition-colors px-4">
+                                        <template x-if="partner.url">
+                                            <img :src="partner.url" :alt="partner.name"
+                                                 class="max-h-12 sm:max-h-14 max-w-[140px] sm:max-w-[160px] w-full object-contain opacity-80 hover:opacity-100 transition-opacity"
+                                                 loading="lazy">
+                                        </template>
+                                        <template x-if="!partner.url">
+                                            <span class="font-display font-bold text-gray-400 hover:text-[#2D6A4F] transition-colors text-xs sm:text-sm tracking-wide text-center"
+                                                  x-text="partner.name"></span>
+                                        </template>
+                                    </a>
+                                </div>
+                            </template>
+                        </div>
                     </div>
-                @endforeach
-            </div>
+
+                    <template x-if="canSlide">
+                        <div class="flex items-center justify-center gap-4 mt-6">
+                            <button type="button" @click="prev()" aria-label="Précédent"
+                                    class="w-9 h-9 rounded-full border border-gray-200 text-gray-500 hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <div class="flex gap-1.5">
+                                <template x-for="(_, i) in slideCount" :key="i">
+                                    <button type="button" @click="goTo(i)"
+                                            class="w-2 h-2 rounded-full transition-colors"
+                                            :class="current === i ? 'bg-[#2D6A4F]' : 'bg-gray-300 hover:bg-gray-400'"
+                                            :aria-label="'Slide ' + (i + 1)"></button>
+                                </template>
+                            </div>
+                            <button type="button" @click="next()" aria-label="Suivant"
+                                    class="w-9 h-9 rounded-full border border-gray-200 text-gray-500 hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </template>
         </div>
     </section>
 
     @push('scripts')
     <script>
-        function counters() {
+        function heroSlider(slides, intervalMs) {
+            return {
+                slides: slides.length ? slides : [{ url: '', alt: '' }],
+                current: 0,
+                timer: null,
+                get showHeroContent() {
+                    const slide = this.slides[this.current];
+                    return !slide || slide.type !== 'event';
+                },
+                start() {
+                    if (this.slides.length <= 1) return;
+                    this.timer = setInterval(() => this.next(), intervalMs);
+                },
+                goTo(i) {
+                    this.current = i;
+                    this.resetTimer();
+                },
+                next() {
+                    this.current = (this.current + 1) % this.slides.length;
+                },
+                prev() {
+                    this.current = (this.current - 1 + this.slides.length) % this.slides.length;
+                    this.resetTimer();
+                },
+                resetTimer() {
+                    if (this.timer) clearInterval(this.timer);
+                    if (this.slides.length > 1) {
+                        this.timer = setInterval(() => this.next(), intervalMs);
+                    }
+                },
+            };
+        }
+
+        function partnerLogoSlider(items, intervalMs) {
+            return {
+                items: items.length ? items : [],
+                current: 0,
+                perView: 4,
+                timer: null,
+                init() {
+                    this.updatePerView();
+                    window.addEventListener('resize', () => this.updatePerView());
+                },
+                updatePerView() {
+                    const w = window.innerWidth;
+                    this.perView = w >= 1280 ? 5 : w >= 1024 ? 4 : w >= 640 ? 3 : 2;
+                    if (this.current > this.maxIndex) {
+                        this.current = this.maxIndex;
+                    }
+                },
+                get canSlide() {
+                    return this.items.length > this.perView;
+                },
+                get maxIndex() {
+                    return Math.max(0, this.items.length - this.perView);
+                },
+                get slideCount() {
+                    return this.maxIndex + 1;
+                },
+                get slotWidthPercent() {
+                    return this.items.length ? 100 / this.perView : 100;
+                },
+                get offsetPercent() {
+                    return this.current * this.slotWidthPercent;
+                },
+                start() {
+                    if (!this.canSlide) return;
+                    this.timer = setInterval(() => this.next(), intervalMs);
+                },
+                goTo(i) {
+                    this.current = i;
+                    this.resetTimer();
+                },
+                next() {
+                    this.current = this.current >= this.maxIndex ? 0 : this.current + 1;
+                    this.resetTimer();
+                },
+                prev() {
+                    this.current = this.current <= 0 ? this.maxIndex : this.current - 1;
+                    this.resetTimer();
+                },
+                resetTimer() {
+                    if (this.timer) clearInterval(this.timer);
+                    if (this.canSlide) {
+                        this.timer = setInterval(() => this.next(), intervalMs);
+                    }
+                },
+            };
+        }
+
+        function counters(targets) {
             return {
                 counts: { pays: 0, orgs: 0, ressources: 0, events: 0 },
-                targets: { pays: 15, orgs: 120, ressources: 300, events: 45 },
+                targets: targets,
+                formatCount(key) {
+                    const n = this.counts[key] ?? 0;
+                    return n > 0 ? n + '+' : '0';
+                },
                 startCounting() {
                     const duration = 2000;
                     const steps = 60;

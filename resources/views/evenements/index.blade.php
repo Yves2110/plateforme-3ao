@@ -11,6 +11,17 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">{{ session('success') }}</div>
+        @endif
+
+        <x-public-manage-bar
+            label="Événements"
+            :permissions="['creer-evenements', 'administrer-utilisateurs']"
+            :create-route="route('admin.evenements.create')"
+            :list-route="route('admin.evenements.index')"
+        />
+
         {{-- Filtres rapides --}}
         <div class="flex flex-wrap gap-2 mb-8">
             @foreach([__('evenements.filter_all') => '', 'Forum' => 'Forum', 'Atelier' => 'Atelier', 'Webinaire' => 'Webinaire', __('evenements.filter_fair') => 'Foire agricole', 'Conférence' => 'Conférence'] as $label => $val)
@@ -27,20 +38,37 @@
         {{-- Grille événements --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($events as $event)
-                <div class="card group overflow-visible">
+                @php $evStatus = $event->schedule()->status(); @endphp
+                <div class="card group overflow-visible relative
+                            {{ $evStatus === 'expired' ? 'opacity-80' : '' }}
+                            {{ $evStatus === 'soon' ? 'ring-2 ring-[#F4C842] ring-offset-1' : '' }}">
+                @if($evStatus === 'soon')
+                    <div class="absolute top-0 left-0 right-0 h-1.5 bg-[#F4C842] z-20 rounded-t-2xl"></div>
+                @endif
+                @if(!empty($canManage))
+                    <x-public-manage-card-actions
+                        :item="$event"
+                        :toggle-route="route('contenu.evenements.toggle', $event)"
+                        published-key="is_validated"
+                        :edit-route="route('admin.evenements.edit', $event)"
+                    />
+                @endif
                     {{-- Thumbnail --}}
-                    <div class="relative h-40 overflow-hidden rounded-t-2xl bg-gradient-to-br from-[#2D6A4F] to-[#40916C]">
+                    <div class="relative h-40 overflow-hidden rounded-t-2xl bg-gradient-to-br from-[#2D6A4F] to-[#40916C] {{ $evStatus === 'expired' ? 'grayscale' : '' }}">
                         @if($event->thumbnail)
                             <img src="{{ asset('storage/'.$event->thumbnail) }}" alt="{{ $event->title }}"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                         @endif
                         {{-- Date overlay --}}
-                        <div class="absolute top-3 left-3 bg-white rounded-xl shadow-md px-3 py-2 text-center min-w-[52px]">
-                            <div class="font-display font-bold text-[#2D6A4F] text-xl leading-none">{{ $event->start_date->format('d') }}</div>
-                            <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">{{ $event->start_date->translatedFormat('M') }}</div>
+                        <div class="absolute top-3 left-3 rounded-xl shadow-md px-3 py-2 text-center min-w-[52px]
+                                    {{ $evStatus === 'expired' ? 'bg-gray-100' : 'bg-white' }}">
+                            <div class="font-display font-bold text-xl leading-none {{ $evStatus === 'expired' ? 'text-gray-500' : 'text-[#2D6A4F]' }}">{{ $event->start_date->format('d') }}</div>
+                            <div class="text-xs font-medium uppercase tracking-wide {{ $evStatus === 'expired' ? 'text-gray-400' : 'text-gray-500' }}">{{ $event->start_date->translatedFormat('M') }}</div>
                         </div>
-                        {{-- Type badge --}}
-                        <span class="absolute top-3 right-3 badge badge-evenement">{{ $event->type }}</span>
+                        <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+                            <x-event-schedule-badge :event="$event" />
+                            <span class="badge badge-evenement">{{ $event->type }}</span>
+                        </div>
                         {{-- En ligne badge --}}
                         @if($event->is_online)
                             <span class="absolute bottom-3 left-3 inline-flex items-center gap-1 px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full">
@@ -97,7 +125,7 @@
                     <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
-                    <p class="font-medium text-lg">Aucun événement à venir</p>
+                    <p class="font-medium text-lg">{{ __('evenements.no_events') }}</p>
                 </div>
             @endforelse
         </div>

@@ -25,12 +25,15 @@ use App\Http\Controllers\Admin\AdminFormationQuizController;
 use App\Http\Controllers\Admin\AdminRssController;
 use App\Http\Controllers\Admin\AdminNewsletterController;
 use App\Http\Controllers\Admin\AdminGuideController;
+use App\Http\Controllers\Admin\AdminHeroSlideController;
+use App\Http\Controllers\Admin\AdminHomePartnerController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\RssController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\FormationController;
 use App\Http\Controllers\MyLearningController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\PublicManageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,7 +62,7 @@ Route::get('/newsletter/desinscription/{token}', [NewsletterController::class, '
 
 // Profils membres
 Route::get('/membres/{user}', [UserProfileController::class, 'show'])->name('membre.show');
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'approved', 'verified'])->group(function () {
     Route::get('/mon-espace', [UserProfileController::class, 'dashboard'])->name('membre.dashboard');
     Route::delete('/mon-compte', [UserProfileController::class, 'deleteAccount'])->name('membre.delete');
 
@@ -145,11 +148,35 @@ Route::prefix('evenements')->name('evenements.')->group(function () {
 |--------------------------------------------------------------------------
 */
 
+Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(function () {
+    Route::view('/inscription-en-attente', 'auth.registration-pending')->name('registration.pending');
+});
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
+    'approved',
     'verified',
 ])->group(function () {
+
+    // Publication / dépublication depuis l'espace public (sans passer par /admin)
+    Route::prefix('contenu')->name('contenu.')->group(function () {
+        Route::post('/ressources/{ressource}/publication', [PublicManageController::class, 'toggleResource'])
+            ->name('ressources.toggle');
+        Route::post('/actualites/{actualite}/publication', [PublicManageController::class, 'toggleActualite'])
+            ->name('actualites.toggle');
+        Route::post('/medias/{media}/publication', [PublicManageController::class, 'toggleMedia'])
+            ->name('medias.toggle');
+        Route::post('/evenements/{event}/publication', [PublicManageController::class, 'toggleEvent'])
+            ->name('evenements.toggle');
+        Route::post('/formations/{formation}/publication', [PublicManageController::class, 'toggleFormation'])
+            ->name('formations.toggle');
+        Route::post('/acteurs/{actor}/publication', [PublicManageController::class, 'toggleActor'])
+            ->name('acteurs.toggle');
+        Route::post('/forum/threads/{thread}/publication', [PublicManageController::class, 'toggleForumThread'])
+            ->name('forum.threads.toggle');
+    });
+
     Route::get('/dashboard', function () {
         $user = auth()->user();
         if ($user && ($user->hasRole('super_admin') || $user->hasRole('moderateur'))) {
@@ -175,28 +202,37 @@ Route::prefix('api/widget')->name('widget.')->group(function () {
 | Back-office Admin
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'admin', 'admin.2fa'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', config('jetstream.auth_session'), 'approved', 'verified'])->group(function () {
+
+    // Validation des inscriptions (validateurs dédiés ou admins)
+    Route::middleware('can.validate.registrations')->group(function () {
+        Route::get('/utilisateurs-en-attente', [AdminUserController::class, 'pending'])
+            ->name('users.pending');
+        Route::post('/utilisateurs/{user}/approuver', [AdminUserController::class, 'approve'])
+            ->name('users.approve');
+        Route::post('/utilisateurs/{user}/refuser', [AdminUserController::class, 'reject'])
+            ->name('users.reject');
+    });
+
+    Route::middleware(['admin', 'admin.2fa'])->group(function () {
 
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::post('/guide/complete', [AdminGuideController::class, 'complete'])->name('guide.complete');
 
+    Route::resource('hero-slides', AdminHeroSlideController::class)->except(['show']);
+    Route::resource('home-partners', AdminHomePartnerController::class)->except(['show', 'index']);
+
     // Utilisateurs
     Route::resource('utilisateurs', AdminUserController::class)->except(['show'])
         ->parameters(['utilisateurs' => 'user']);
-
-    // Inscriptions en attente
-    Route::get('/utilisateurs-en-attente', [AdminUserController::class, 'pending'])
-        ->name('users.pending');
-    Route::post('/utilisateurs/{user}/approuver', [AdminUserController::class, 'approve'])
-        ->name('users.approve');
-    Route::post('/utilisateurs/{user}/refuser', [AdminUserController::class, 'reject'])
-        ->name('users.reject');
 
     // Actualités
     Route::resource('actualites', AdminActualiteController::class)->except(['show']);
 
     // Ressources bibliothèque
+    Route::post('/ressources/{ressource}/toggle-validation', [AdminResourceController::class, 'toggleValidation'])
+        ->name('ressources.toggle-validation');
     Route::resource('ressources', AdminResourceController::class)->except(['show']);
 
     // Événements
@@ -304,4 +340,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', config('jets
         Route::post('/campagnes/{campaign}/relancer', [AdminNewsletterController::class, 'retryCampaign'])->name('campaigns.retry');
         Route::post('/campagnes/{campaign}/annuler', [AdminNewsletterController::class, 'cancelCampaign'])->name('campaigns.cancel');
     });
+
+    }); // fin middleware admin + 2FA
 });
