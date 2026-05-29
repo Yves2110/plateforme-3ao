@@ -82,7 +82,7 @@
                 @endif
                 <input type="file" name="file_path" accept="image/jpeg,image/png,image/webp,image/gif"
                        class="w-full text-sm text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#F8F5F0] file:text-[#2D6A4F] file:font-semibold hover:file:bg-green-50">
-                <p class="text-xs text-gray-400">JPG, PNG, WebP ou GIF — max 50 Mo par image</p>
+                <p class="text-xs text-gray-400">JPG, PNG, WebP ou GIF   max 50 Mo par image</p>
             </div>
 
             {{-- Galerie : plusieurs images --}}
@@ -96,13 +96,13 @@
                     </p>
                     <input type="file" name="gallery_images[]" multiple accept="image/jpeg,image/png,image/webp,image/gif"
                            class="w-full text-sm text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-white file:text-[#2D6A4F] file:font-semibold hover:file:bg-blue-50">
-                    <p class="text-xs text-gray-400 mt-1">Jusqu’à 30 images — max 50 Mo chacune</p>
+                    <p class="text-xs text-gray-400 mt-1">Jusqu’à 30 images   max 50 Mo chacune</p>
                 </div>
 
                 @if($action === 'edit' && $galleryPhotos->count())
                     <div>
                         <p class="text-xs font-semibold text-gray-600 mb-2">
-                            Images actuelles ({{ $galleryPhotos->count() }}) — cochez pour retirer
+                            Images actuelles ({{ $galleryPhotos->count() }})   cochez pour retirer
                         </p>
                         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
                             @foreach($galleryPhotos as $photo)
@@ -147,16 +147,31 @@
                     Si vide, la première image de la galerie sera utilisée automatiquement.
                 </p>
                 <p class="text-xs text-gray-400" x-show="mediaType !== 'gallery'">
-                    Utilisée sur les cartes du hub Multimédia — max 4 Mo
+                    Utilisée sur les cartes du hub Multimédia   max 4 Mo
                 </p>
             </div>
 
-            <div class="flex items-center gap-3">
-                <input type="hidden" name="is_published" value="0">
-                <input type="checkbox" id="is_published" name="is_published" value="1"
-                       {{ old('is_published', $media->is_published) ? 'checked' : '' }}
-                       class="w-4 h-4 text-[#2D6A4F] rounded">
-                <label for="is_published" class="text-sm font-medium text-gray-700">Publier immédiatement</label>
+            <div class="flex flex-col gap-3 p-4 bg-[#F8F5F0] border border-green-100 rounded-xl">
+                <div class="flex items-center gap-3">
+                    <input type="hidden" name="is_published" value="0">
+                    <input type="checkbox" id="is_published" name="is_published" value="1"
+                           {{ old('is_published', $media->is_published) ? 'checked' : '' }}
+                           class="w-4 h-4 text-[#2D6A4F] rounded">
+                    <label for="is_published" class="text-sm font-medium text-gray-700">Publier immédiatement</label>
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="hidden" name="featured_in_gallery" value="0">
+                    <input type="checkbox" id="featured_in_gallery" name="featured_in_gallery" value="1"
+                           {{ old('featured_in_gallery', $media->featured_in_gallery) ? 'checked' : '' }}
+                           class="w-4 h-4 text-[#2D6A4F] rounded">
+                    <label for="featured_in_gallery" class="text-sm font-medium text-gray-700">Mettre en avant dans le slider de la galerie</label>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Ordre dans le slider</label>
+                    <input type="number" name="gallery_sort_order" min="0" max="999"
+                           value="{{ old('gallery_sort_order', $media->gallery_sort_order ?? 0) }}"
+                           class="w-24 px-3 py-2 text-sm border border-gray-200 rounded-xl">
+                </div>
             </div>
 
             <div class="flex gap-3 pt-2">

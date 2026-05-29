@@ -41,7 +41,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Catégorie <span class="text-red-500">*</span></label>
                     <select name="category" required
                             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#52B788] text-sm bg-white">
-                        <option value="">— Choisir une catégorie —</option>
+                        <option value="">  Choisir une catégorie  </option>
                         @foreach($categories as $slug => $name)
                             <option value="{{ $slug }}" {{ old('category', request('category')) === $slug ? 'selected' : '' }}>{{ $name }}</option>
                         @endforeach

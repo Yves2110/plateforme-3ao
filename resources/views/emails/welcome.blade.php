@@ -3,7 +3,7 @@
 
 Bonjour **{{ $user->name }}**,
 
-Nous sommes ravis de vous accueillir sur la **Plateforme Collaborative pour l'Agroécologie** de l'Alliance 3AO — le hub de référence pour les acteurs de l'agroécologie en Afrique de l'Ouest.
+Nous sommes ravis de vous accueillir sur la **Plateforme Collaborative pour l'Agroécologie** de l'Alliance 3AO   le hub de référence pour les acteurs de l'agroécologie en Afrique de l'Ouest.
 
 Voici ce que vous pouvez faire dès maintenant :
 
@@ -24,5 +24,5 @@ Si vous avez des questions, notre équipe est disponible à **contact3ao@gmail.c
 
 Bonne exploration !
 
-**L'équipe 3AO — Alliance pour l'Agroécologie en Afrique de l'Ouest**
+**L'équipe 3AO   Alliance pour l'Agroécologie en Afrique de l'Ouest**
 </x-mail::message>

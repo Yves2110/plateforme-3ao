@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'spam.protect' => \App\Http\Middleware\PreventSpamSubmission::class,
             'approved' => \App\Http\Middleware\EnsureUserApproval::class,
             'can.validate.registrations' => \App\Http\Middleware\EnsureCanValidateRegistrations::class,
+            'admin.permission' => \App\Http\Middleware\EnsureAdminPermission::class,
         ]);
         $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\SecurityHeaders::class);

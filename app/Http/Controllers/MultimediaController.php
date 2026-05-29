@@ -17,6 +17,7 @@ class MultimediaController extends Controller
 
         $media = $baseQuery()
             ->when($type, fn ($q) => $q->byType($type))
+            ->with(['photos' => fn ($q) => $q->orderBy('order')->limit(1)])
             ->orderByDesc('published_at')
             ->paginate(12)
             ->withQueryString();
@@ -29,7 +30,21 @@ class MultimediaController extends Controller
             'gallery' => $baseQuery()->byType('gallery')->count(),
         ];
 
-        return view('multimedia.index', compact('media', 'type', 'counts', 'canManage'));
+        $gallerySlides = $baseQuery()
+            ->featuredGallery()
+            ->with(['photos' => fn ($q) => $q->orderBy('order')->limit(1)])
+            ->take(8)
+            ->get()
+            ->map(fn ($m) => [
+                'url'   => $m->coverImageUrl(),
+                'title' => $m->title,
+                'href'  => route('multimedia.show', $m->slug),
+                'alt'   => $m->title,
+                'mode'  => $m->cardDisplayMode(),
+            ])
+            ->values();
+
+        return view('multimedia.index', compact('media', 'type', 'counts', 'canManage', 'gallerySlides'));
     }
 
     public function show(string $slug)

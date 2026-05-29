@@ -13,14 +13,7 @@ class UserApprovedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public User $user;
-    public string $password;
-
-    public function __construct(User $user, string $password)
-    {
-        $this->user = $user;
-        $this->password = $password;
-    }
+    public function __construct(public User $user) {}
 
     public function envelope(): Envelope
     {

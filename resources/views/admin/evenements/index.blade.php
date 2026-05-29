@@ -37,7 +37,7 @@
                         <td class="px-5 py-3 font-medium text-gray-900 max-w-xs truncate">{{ $e->title }}</td>
                         <td class="px-5 py-3 text-gray-600 text-xs">{{ $e->type }}</td>
                         <td class="px-5 py-3 text-gray-500 text-xs truncate max-w-[120px]">
-                            {{ $e->is_online ? '🌐 En ligne' : ($e->location ?? '—') }}
+                            {{ $e->is_online ? '🌐 En ligne' : ($e->location ?? ' ') }}
                         </td>
                         <td class="px-5 py-3 text-gray-600 text-xs">{{ \Carbon\Carbon::parse($e->start_date)->translatedFormat('d M Y') }}</td>
                         <td class="px-5 py-3">

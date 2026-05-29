@@ -46,10 +46,10 @@
                             @elseif($m->file_path)
                                 1 fichier
                             @else
-                                —
+                                 
                             @endif
                         </td>
-                        <td class="px-5 py-3 text-gray-500 text-xs truncate max-w-[120px]">{{ $m->source ?? '—' }}</td>
+                        <td class="px-5 py-3 text-gray-500 text-xs truncate max-w-[120px]">{{ $m->source ?? ' ' }}</td>
                         <td class="px-5 py-3 text-gray-600">{{ $m->views }}</td>
                         <td class="px-5 py-3">
                             <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $m->is_published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">

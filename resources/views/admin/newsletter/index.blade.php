@@ -19,7 +19,7 @@
 
     @if($mailDriverIsLog)
         <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
-            <strong>Mode log actif</strong> — configurez SMTP dans <code class="bg-amber-100 px-1 rounded">.env</code> pour un envoi réel.
+            <strong>Mode log actif</strong>   configurez SMTP dans <code class="bg-amber-100 px-1 rounded">.env</code> pour un envoi réel.
         </div>
     @else
         <div class="rounded-2xl border border-green-200 bg-green-50 p-4 flex flex-wrap items-center justify-between gap-3">

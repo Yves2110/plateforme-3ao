@@ -54,7 +54,7 @@
                 <ul class="list-disc pl-5 space-y-1 text-sm">
                     <li><strong>Essentiels</strong> : session d'authentification, protection CSRF.</li>
                     <li><strong>Analytique anonymisé</strong> : mesure d'audience sans identification personnelle.</li>
-                    <li><strong>Traduction</strong> : Google Translate (tiers) — uniquement si accepté.</li>
+                    <li><strong>Traduction</strong> : Google Translate (tiers)   uniquement si accepté.</li>
                 </ul>
                 <p class="mt-3">Vous pouvez refuser les cookies non essentiels via la bannière de consentement.</p>
             </section>

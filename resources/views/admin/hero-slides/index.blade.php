@@ -1,7 +1,7 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Accueil — visuels')
-@section('page-title', 'Page d\'accueil — visuels')
+@section('title', 'Accueil   visuels')
+@section('page-title', 'Page d\'accueil   visuels')
 @section('page-subtitle', 'Slider hero et logos partenaires')
 
 @section('header-actions')

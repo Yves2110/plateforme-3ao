@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Formation;
+use App\Models\FormationEnrollment;
+use App\Services\FormationEnrollmentService;
 use App\Support\PublicContentGate;
 use Illuminate\Http\Request;
 
 class FormationController extends Controller
 {
+    public function __construct(
+        private FormationEnrollmentService $enrollmentService,
+    ) {}
+
     public function index(Request $request)
     {
         $canManage = PublicContentGate::can(['gerer-formations', 'administrer-utilisateurs']);
@@ -46,7 +52,55 @@ class FormationController extends Controller
                                 ->orWhere('country', $formation->country))
             ->limit(3)->get();
 
-        return view('formation.show', compact('formation', 'related', 'canManage'));
+        $hasLmsContent = $formation->hasLmsContent();
+        $lmsStats = null;
+        $lmsModules = collect();
+
+        if ($hasLmsContent) {
+            $lmsModules = $formation->publishedModules()
+                ->with(['publishedLessons' => fn ($q) => $q->select('id', 'module_id', 'title', 'type', 'duration_minutes', 'order')])
+                ->get();
+
+            $lmsStats = [
+                'modules' => $lmsModules->count(),
+                'lessons' => $lmsModules->sum(fn ($m) => $m->publishedLessons->count()),
+                'duration' => $formation->formatted_duration,
+            ];
+        }
+
+        $enrollment = null;
+        if (auth()->check()) {
+            $enrollment = FormationEnrollment::where('user_id', auth()->id())
+                ->where('formation_id', $formation->id)
+                ->first();
+
+            if (request()->boolean('inscrire') && ! $enrollment) {
+                $result = $this->enrollmentService->enroll(auth()->user(), $formation);
+
+                return $this->enrollmentService->redirectAfterEnroll(
+                    $formation,
+                    $result['enrollment'],
+                    auth()->user(),
+                    $result['message'],
+                    $result['created'] ? 'success' : 'info',
+                );
+            }
+        }
+
+        $courseEntryUrl = ($enrollment && $hasLmsContent && auth()->check())
+            ? $this->enrollmentService->courseEntryUrl($formation, auth()->user())
+            : null;
+
+        return view('formation.show', compact(
+            'formation',
+            'related',
+            'canManage',
+            'hasLmsContent',
+            'lmsStats',
+            'lmsModules',
+            'enrollment',
+            'courseEntryUrl',
+        ));
     }
 }
 

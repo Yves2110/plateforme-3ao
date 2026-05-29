@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AdminFormationController;
 use App\Http\Controllers\Admin\AdminFormationModuleController;
 use App\Http\Controllers\Admin\AdminFormationLessonController;
 use App\Http\Controllers\Admin\AdminFormationQuizController;
+use App\Http\Controllers\Admin\AdminFormationEnrollmentController;
 use App\Http\Controllers\Admin\AdminRssController;
 use App\Http\Controllers\Admin\AdminNewsletterController;
 use App\Http\Controllers\Admin\AdminGuideController;
@@ -66,13 +67,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'approved',
     Route::get('/mon-espace', [UserProfileController::class, 'dashboard'])->name('membre.dashboard');
     Route::delete('/mon-compte', [UserProfileController::class, 'deleteAccount'])->name('membre.delete');
 
+    Route::post('/formation/{formation:slug}/inscrire', [MyLearningController::class, 'enroll'])->name('formation.enroll');
+
     // Espace apprentissage (LMS)
     Route::prefix('mon-apprentissage')->name('learning.')->group(function () {
         Route::get('/', [MyLearningController::class, 'dashboard'])->name('dashboard');
         Route::get('/formations/{formation:slug}', [MyLearningController::class, 'show'])->name('show');
         Route::get('/formations/{formation:slug}/lecons/{lesson}', [MyLearningController::class, 'lesson'])->name('lesson');
-        Route::post('/formations/{formation}/inscrire', [MyLearningController::class, 'enroll'])->name('enroll');
-        Route::post('/formations/{formation}/lecons/{lesson}/completer', [MyLearningController::class, 'completeLesson'])->name('complete');
+        Route::post('/formations/{formation:slug}/inscrire', [MyLearningController::class, 'enroll'])->name('enroll');
+        Route::post('/formations/{formation:slug}/lecons/{lesson}/completer', [MyLearningController::class, 'completeLesson'])->name('complete');
         Route::post('/lecons/{lesson}/temps', [MyLearningController::class, 'trackTime'])->name('track-time');
 
         // Quiz
@@ -80,6 +83,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'approved',
         Route::post('/formations/{formation:slug}/lecons/{lesson}/quiz/{quiz}/start', [MyLearningController::class, 'startQuiz'])->name('quiz.start');
         Route::post('/formations/{formation:slug}/lecons/{lesson}/quiz/{quiz}/submit', [MyLearningController::class, 'submitQuiz'])->name('quiz.submit');
         Route::get('/formations/{formation:slug}/lecons/{lesson}/quiz/{quiz}/results/{attempt}', [MyLearningController::class, 'quizResults'])->name('quiz.results');
+
+        Route::get('/formations/{formation:slug}/certificat', [MyLearningController::class, 'certificate'])->name('certificate');
+        Route::get('/formations/{formation:slug}/certificat/telecharger', [MyLearningController::class, 'downloadCertificate'])->name('certificate.download');
     });
 });
 
@@ -192,7 +198,7 @@ Route::middleware([
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('api/widget')->name('widget.')->group(function () {
+Route::prefix('api/widget')->name('widget.')->middleware('throttle:widget')->group(function () {
     Route::get('/news', [HomeController::class, 'widgetNews'])->name('news');
     Route::get('/events', [HomeController::class, 'widgetEvents'])->name('events');
 });
@@ -214,40 +220,58 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', config('jets
             ->name('users.reject');
     });
 
-    Route::middleware(['admin', 'admin.2fa'])->group(function () {
+    $adminBase = ['admin', 'admin.2fa'];
+    $dashPerms = 'acceder-statistiques,administrer-utilisateurs,moderer-forum,publier-actualites,publier-bibliotheque,gerer-carte,soumettre-acteur,creer-evenements,contribuer-multimedia,gerer-formations,gerer-newsletter,gerer-rss';
 
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::middleware(array_merge($adminBase, ['admin.permission:'.$dashPerms]))->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/guide/complete', [AdminGuideController::class, 'complete'])->name('guide.complete');
+    });
 
-    Route::post('/guide/complete', [AdminGuideController::class, 'complete'])->name('guide.complete');
+    Route::middleware(array_merge($adminBase, ['admin.permission:administrer-utilisateurs']))->group(function () {
+        Route::post('utilisateurs/{user}/toggle-actif', [AdminUserController::class, 'toggleActive'])
+            ->name('utilisateurs.toggle-active');
+        Route::resource('hero-slides', AdminHeroSlideController::class)->except(['show']);
+        Route::resource('home-partners', AdminHomePartnerController::class)->except(['show', 'index']);
+        Route::resource('utilisateurs', AdminUserController::class)->except(['show'])
+            ->parameters(['utilisateurs' => 'user']);
+    });
 
-    Route::resource('hero-slides', AdminHeroSlideController::class)->except(['show']);
-    Route::resource('home-partners', AdminHomePartnerController::class)->except(['show', 'index']);
+    Route::middleware(array_merge($adminBase, ['admin.permission:publier-actualites,administrer-utilisateurs']))->group(function () {
+        Route::resource('actualites', AdminActualiteController::class)->except(['show']);
+    });
 
-    // Utilisateurs
-    Route::resource('utilisateurs', AdminUserController::class)->except(['show'])
-        ->parameters(['utilisateurs' => 'user']);
+    Route::middleware(array_merge($adminBase, ['admin.permission:publier-bibliotheque,administrer-utilisateurs']))->group(function () {
+        Route::post('/ressources/{ressource}/toggle-validation', [AdminResourceController::class, 'toggleValidation'])
+            ->name('ressources.toggle-validation');
+        Route::resource('ressources', AdminResourceController::class)->except(['show']);
+    });
 
-    // Actualités
-    Route::resource('actualites', AdminActualiteController::class)->except(['show']);
+    Route::middleware(array_merge($adminBase, ['admin.permission:creer-evenements,administrer-utilisateurs']))->group(function () {
+        Route::resource('evenements', AdminEventController::class)->except(['show']);
+    });
 
-    // Ressources bibliothèque
-    Route::post('/ressources/{ressource}/toggle-validation', [AdminResourceController::class, 'toggleValidation'])
-        ->name('ressources.toggle-validation');
-    Route::resource('ressources', AdminResourceController::class)->except(['show']);
+    Route::middleware(array_merge($adminBase, ['admin.permission:contribuer-multimedia,administrer-utilisateurs']))->group(function () {
+        Route::resource('medias', AdminMediaController::class)->except(['show']);
+    });
 
-    // Événements
-    Route::resource('evenements', AdminEventController::class)->except(['show']);
+    Route::middleware(array_merge($adminBase, ['admin.permission:gerer-carte,soumettre-acteur,administrer-utilisateurs']))->group(function () {
+        Route::resource('acteurs', AdminActorController::class)->except(['show']);
+    });
 
-    // Médias
-    Route::resource('medias', AdminMediaController::class)->except(['show']);
-
-    // Acteurs
-    Route::resource('acteurs', AdminActorController::class)->except(['show']);
-
-    // Formations
+    Route::middleware(array_merge($adminBase, ['admin.permission:gerer-formations,administrer-utilisateurs']))->group(function () {
     Route::resource('formations', AdminFormationController::class)->except(['show']);
     Route::post('/formations/{formation}/toggle-validation', [AdminFormationController::class, 'toggleValidation'])
         ->name('formations.toggle-validation');
+
+    Route::get('/formations/{formation}/inscriptions', [AdminFormationEnrollmentController::class, 'index'])
+        ->name('formations.enrollments.index');
+    Route::get('/formations/{formation}/inscriptions/export', [AdminFormationEnrollmentController::class, 'export'])
+        ->name('formations.enrollments.export');
+    Route::post('/formations/{formation}/inscriptions/{enrollment}/activer', [AdminFormationEnrollmentController::class, 'activate'])
+        ->name('formations.enrollments.activate');
+    Route::delete('/formations/{formation}/inscriptions/{enrollment}', [AdminFormationEnrollmentController::class, 'cancel'])
+        ->name('formations.enrollments.cancel');
 
     // Modules des formations
     Route::get('/formations/{formation}/modules', [AdminFormationModuleController::class, 'index'])
@@ -303,15 +327,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', config('jets
     Route::get('/formations/{formation}/quizzes/get-lessons', [AdminFormationQuizController::class, 'getLessons'])
         ->name('formations.quizzes.get-lessons');
 
-    // Forum — modération
+    });
+
+    Route::middleware(array_merge($adminBase, ['admin.permission:moderer-forum,administrer-utilisateurs']))->group(function () {
     Route::prefix('forum')->name('forum.')->group(function () {
         Route::get('/', [AdminForumController::class, 'index'])->name('index');
         Route::post('/threads/{thread}/validate', [AdminForumController::class, 'validateThread'])->name('threads.validate');
         Route::delete('/threads/{thread}', [AdminForumController::class, 'destroyThread'])->name('threads.destroy');
         Route::delete('/replies/{reply}', [AdminForumController::class, 'destroyReply'])->name('replies.destroy');
     });
+    });
 
-    // Flux RSS entrants
+    Route::middleware(array_merge($adminBase, ['admin.permission:gerer-rss,administrer-utilisateurs']))->group(function () {
     Route::prefix('rss')->name('rss.')->group(function () {
         Route::get('/', [AdminRssController::class, 'index'])->name('index');
         Route::post('/sources', [AdminRssController::class, 'storeSource'])->name('sources.store');
@@ -321,8 +348,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', config('jets
         Route::post('/items/{item}/approve', [AdminRssController::class, 'approve'])->name('items.approve');
         Route::post('/items/{item}/reject', [AdminRssController::class, 'reject'])->name('items.reject');
     });
+    });
 
-    // Newsletter
+    Route::middleware(array_merge($adminBase, ['admin.permission:gerer-newsletter,administrer-utilisateurs']))->group(function () {
     Route::prefix('newsletter')->name('newsletter.')->group(function () {
         Route::get('/', [AdminNewsletterController::class, 'index'])->name('index');
         Route::post('/test-email', [AdminNewsletterController::class, 'sendTestEmail'])->name('test-email');
@@ -340,6 +368,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', config('jets
         Route::post('/campagnes/{campaign}/relancer', [AdminNewsletterController::class, 'retryCampaign'])->name('campaigns.retry');
         Route::post('/campagnes/{campaign}/annuler', [AdminNewsletterController::class, 'cancelCampaign'])->name('campaigns.cancel');
     });
+    });
 
-    }); // fin middleware admin + 2FA
 });

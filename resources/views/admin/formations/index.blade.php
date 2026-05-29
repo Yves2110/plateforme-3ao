@@ -65,6 +65,7 @@
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Dates</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Prix</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Statut</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Contenu LMS</th>
                         <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600">Actions</th>
                     </tr>
                 </thead>
@@ -76,9 +77,7 @@
                                     @if($formation->thumbnail)
                                         <img src="{{ asset('storage/'.$formation->thumbnail) }}" class="w-12 h-12 rounded-lg object-cover" alt="">
                                     @else
-                                        <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-[#F8F5F0] to-[#d4e8dc] flex items-center justify-center text-lg">
-                                            🎓
-                                        </div>
+                                        <x-formation-cover-placeholder class="w-12 h-12 rounded-lg" size="sm" />
                                     @endif
                                     <div>
                                         <p class="font-medium text-gray-800">{{ $formation->title }}</p>
@@ -128,8 +127,28 @@
                                     </span>
                                 @endif
                             </td>
+                            <td class="px-4 py-3 text-sm">
+                                @if(($formation->published_modules_count ?? 0) > 0)
+                                    <a href="{{ route('admin.formations.modules.index', $formation) }}" class="text-[#2D6A4F] hover:underline">
+                                        {{ $formation->published_modules_count }} module(s)
+                                    </a>
+                                @else
+                                    <a href="{{ route('admin.formations.modules.index', $formation) }}" class="text-amber-600 hover:underline text-xs">
+                                        + Ajouter du contenu
+                                    </a>
+                                @endif
+                            </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-1">
+                                    <a href="{{ route('admin.formations.modules.index', $formation) }}" class="p-2 text-gray-500 hover:text-[#2D6A4F] hover:bg-green-50 rounded-lg transition-colors" title="Modules & leçons">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                    </a>
+                                    <a href="{{ route('admin.formations.quizzes.index', $formation) }}" class="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Quiz">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </a>
+                                    <a href="{{ route('admin.formations.enrollments.index', $formation) }}" class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Inscriptions">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </a>
                                     <form method="POST" action="{{ route('admin.formations.toggle-validation', $formation) }}" class="inline">
                                         @csrf
                                         <button type="submit" class="p-2 text-gray-500 hover:text-{{ $formation->is_validated ? 'amber' : 'green' }}-600 hover:bg-{{ $formation->is_validated ? 'amber' : 'green' }}-50 rounded-lg transition-colors" title="{{ $formation->is_validated ? 'Dévalider' : 'Valider' }}">
@@ -155,7 +174,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-12 text-center text-gray-500">
+                            <td colspan="7" class="px-4 py-12 text-center text-gray-500">
                                 <div class="text-4xl mb-2">📭</div>
                                 <p>Aucune formation trouvée</p>
                             </td>

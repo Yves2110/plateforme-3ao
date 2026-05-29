@@ -65,7 +65,7 @@
                         </div>
                     @elseif($item->file_path)
                         <video controls class="w-full rounded-2xl mb-6 bg-black"
-                               poster="{{ $item->thumbnail ? asset('storage/'.$item->thumbnail) : '' }}">
+                               poster="{{ $item->coverImageUrl() }}">
                             <source src="{{ asset('storage/'.$item->file_path) }}" type="video/mp4">
                             Votre navigateur ne supporte pas la lecture vidéo.
                         </video>
@@ -75,12 +75,9 @@
                 @elseif($item->type === 'podcast')
                     <div class="bg-gradient-to-br from-[#1A1A2E] to-[#2D6A4F] rounded-2xl p-8 mb-6 text-white">
                         <div class="flex items-center gap-5 mb-6">
-                            <div class="w-20 h-20 rounded-2xl overflow-hidden bg-white/10 shrink-0 flex items-center justify-center">
-                                @if($item->thumbnail)
-                                    <img src="{{ asset('storage/'.$item->thumbnail) }}" alt="" class="w-full h-full object-cover">
-                                @else
-                                    <svg class="w-10 h-10 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
-                                @endif
+                            <div class="w-20 h-20 rounded-2xl overflow-hidden bg-white/10 shrink-0 flex items-center justify-center p-2">
+                                <img src="{{ $item->coverImageUrl() }}" alt="{{ $item->title }}"
+                                     class="max-w-full max-h-full object-contain">
                             </div>
                             <div>
                                 <p class="font-display font-bold text-lg leading-snug">{{ $item->title }}</p>
@@ -126,12 +123,15 @@
 
                 {{-- ===== PHOTO ===== --}}
                 @else
-                    @if($item->file_path)
-                        <div class="mb-6">
-                            <img src="{{ asset('storage/'.$item->file_path) }}" alt="{{ $item->title }}"
-                                 class="w-full rounded-2xl object-cover max-h-[500px]">
-                        </div>
-                    @endif
+                    <div class="mb-6">
+                        <x-cover-visual
+                            :src="$item->coverImageUrl()"
+                            :alt="$item->title"
+                            :mode="$item->cardDisplayMode()"
+                            height-class="max-h-[500px] min-h-[280px]"
+                            rounded-class="rounded-2xl"
+                        />
+                    </div>
                 @endif
 
                 {{-- Description --}}
@@ -189,14 +189,8 @@
                             @foreach($related as $r)
                                 <a href="{{ route('multimedia.show', $r->slug) }}"
                                    class="flex gap-3 p-3 bg-white rounded-xl border border-gray-100 hover:border-[#52B788] hover:shadow-sm transition-all group">
-                                    <div class="w-14 h-14 rounded-lg overflow-hidden bg-gradient-to-br from-[#52B788] to-[#2D6A4F] shrink-0">
-                                        @if($r->thumbnail)
-                                            <img src="{{ asset('storage/'.$r->thumbnail) }}" alt="" class="w-full h-full object-cover">
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center">
-                                                <svg class="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16"/></svg>
-                                            </div>
-                                        @endif
+                                    <div class="w-14 h-14 rounded-lg overflow-hidden bg-gradient-to-br from-[#52B788] to-[#2D6A4F] shrink-0 flex items-center justify-center p-1">
+                                        <img src="{{ $r->coverImageUrl() }}" alt="" class="max-w-full max-h-full {{ $r->cardDisplayMode() === 'logo' ? 'object-contain' : 'object-cover w-full h-full' }}">
                                     </div>
                                     <div class="min-w-0">
                                         <p class="text-xs font-semibold text-[#2D6A4F]">{{ ucfirst($r->type) }}</p>

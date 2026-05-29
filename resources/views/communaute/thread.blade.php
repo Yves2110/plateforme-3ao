@@ -39,7 +39,7 @@
                     @endif
                     @if($forumThread->is_locked)
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold bg-gray-100 text-gray-600 rounded-full">
-                            🔒 Verrouillé
+                            <span class="inline-flex items-center gap-1"><x-icon name="lock" class="w-3.5 h-3.5" /> Verrouillé</span>
                         </span>
                     @endif
                     <span class="px-2.5 py-0.5 text-xs font-semibold bg-[#F8F5F0] text-[#2D6A4F] rounded-full">{{ $categoryName }}</span>
@@ -66,19 +66,19 @@
                     <form action="{{ route('communaute.moderate', [$forumThread->is_pinned ? 'unpin' : 'pin', $forumThread->id]) }}" method="POST">
                         @csrf
                         <button class="px-3 py-1.5 text-xs bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100">
-                            {{ $forumThread->is_pinned ? '📌 Désépingler' : '📌 Épingler' }}
+                            <span class="inline-flex items-center gap-1"><x-icon name="pin" class="w-3.5 h-3.5" /> {{ $forumThread->is_pinned ? 'Désépingler' : 'Épingler' }}</span>
                         </button>
                     </form>
                     <form action="{{ route('communaute.moderate', [$forumThread->is_locked ? 'unlock' : 'lock', $forumThread->id]) }}" method="POST">
                         @csrf
                         <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200">
-                            {{ $forumThread->is_locked ? '🔓 Déverrouiller' : '🔒 Verrouiller' }}
+                            <span class="inline-flex items-center gap-1"><x-icon :name="$forumThread->is_locked ? 'unlock' : 'lock'" class="w-3.5 h-3.5" /> {{ $forumThread->is_locked ? 'Déverrouiller' : 'Verrouiller' }}</span>
                         </button>
                     </form>
                     <form action="{{ route('communaute.moderate', ['delete', $forumThread->id]) }}" method="POST"
                           onsubmit="return confirm('Supprimer définitivement cette discussion ?')">
                         @csrf
-                        <button class="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100">🗑 Supprimer</button>
+                        <button class="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 inline-flex items-center gap-1"><x-icon name="trash" class="w-3.5 h-3.5" /> Supprimer</button>
                     </form>
                 </div>
             @endcan

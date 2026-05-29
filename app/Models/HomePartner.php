@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class HomePartner extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
         'name',
         'logo_path',

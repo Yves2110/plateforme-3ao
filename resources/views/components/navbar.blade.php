@@ -69,7 +69,7 @@
                 </a>
                 <a id="nav-formation" href="{{ route('formation.index') }}"
                    class="nav-link px-3 py-2 rounded-lg hover:bg-[#F8F5F0] {{ request()->routeIs('formation.*') ? 'text-[#2D6A4F] font-semibold bg-[#F8F5F0]' : '' }}">
-                    🎓 {{ __('nav.training') }}
+                    <x-icon name="graduation" class="w-4 h-4 inline-block -mt-0.5" /> {{ __('nav.training') }}
                 </a>
 
                 {{-- {{ __('nav.about') }} (dropdown) --}}
@@ -147,6 +147,10 @@
                             <a href="{{ route('membre.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 {{ __('nav.my_space') }}
+                            </a>
+                            <a href="{{ route('learning.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                Mon apprentissage
                             </a>
                             <a href="{{ route('membre.show', $u) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Mon apprentissage — Plateforme 3AO</x-slot>
+    <x-slot name="title">Mon apprentissage   Plateforme 3AO</x-slot>
     <x-slot name="description">Suivez vos formations et progressez dans l'agroécologie</x-slot>
 
     {{-- Hero --}}
@@ -46,9 +46,7 @@
                                 @if($enrollment->formation->thumbnail)
                                     <img src="{{ asset('storage/'.$enrollment->formation->thumbnail) }}" class="w-full md:w-48 h-32 rounded-xl object-cover" alt="">
                                 @else
-                                    <div class="w-full md:w-48 h-32 rounded-xl bg-gradient-to-br from-[#F8F5F0] to-[#d4e8dc] flex items-center justify-center text-4xl">
-                                        🎓
-                                    </div>
+                                    <x-formation-cover-placeholder class="w-full md:w-48 h-32 rounded-xl" size="md" />
                                 @endif
                                 <div class="flex-1">
                                     <div class="flex items-start justify-between gap-4">
@@ -60,7 +58,7 @@
                                                     'webinaire' => 'bg-purple-100 text-purple-700',
                                                     'certification' => 'bg-green-100 text-green-700',
                                                     default => 'bg-gray-100 text-gray-700'
-                                                } }">
+                                                } }}">
                                                 {{ ucfirst($enrollment->formation->type) }}
                                             </span>
                                             <h3 class="font-display font-semibold text-lg text-[#1A1A2E] mt-2">{{ $enrollment->formation->title }}</h3>
@@ -98,15 +96,25 @@
                             @if($enrollment->formation->thumbnail)
                                 <img src="{{ asset('storage/'.$enrollment->formation->thumbnail) }}" class="w-full h-40 rounded-xl object-cover mb-4" alt="">
                             @else
-                                <div class="w-full h-40 rounded-xl bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-4xl mb-4">
-                                    ✅
-                                </div>
+                                <x-formation-cover-placeholder class="w-full h-40 rounded-xl mb-4" />
                             @endif
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                Terminée
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                <x-icon name="check-circle" class="w-3.5 h-3.5" /> Terminée
                             </span>
                             <h3 class="font-display font-semibold text-[#1A1A2E] mt-2">{{ $enrollment->formation->title }}</h3>
                             <p class="text-xs text-gray-500 mt-1">Complétée le {{ $enrollment->completed_at?->format('d/m/Y') }}</p>
+                            @if($enrollment->certificate)
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <a href="{{ route('learning.certificate.download', $enrollment->formation->slug) }}"
+                                       class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-[#2D6A4F] text-white rounded-lg hover:bg-[#40916C]">
+                                        Certificat PDF
+                                    </a>
+                                    <a href="{{ route('learning.show', $enrollment->formation->slug) }}"
+                                       class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#2D6A4F] border border-[#2D6A4F] rounded-lg hover:bg-[#F8F5F0]">
+                                        Voir le parcours
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>
@@ -126,9 +134,7 @@
                             @if($formation->thumbnail)
                                 <img src="{{ asset('storage/'.$formation->thumbnail) }}" class="w-full h-40 rounded-xl object-cover mb-4 group-hover:scale-105 transition-transform" alt="">
                             @else
-                                <div class="w-full h-40 rounded-xl bg-gradient-to-br from-[#F8F5F0] to-[#d4e8dc] flex items-center justify-center text-4xl mb-4">
-                                    🎓
-                                </div>
+                                <x-formation-cover-placeholder class="w-full h-40 rounded-xl mb-4" />
                             @endif
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
                                 {{ match($formation->type) {
@@ -137,7 +143,7 @@
                                     'webinaire' => 'bg-purple-100 text-purple-700',
                                     'certification' => 'bg-green-100 text-green-700',
                                     default => 'bg-gray-100 text-gray-700'
-                                } }">
+                                } }}">
                                 {{ ucfirst($formation->type) }}
                             </span>
                             <h3 class="font-display font-semibold text-[#1A1A2E] mt-2 group-hover:text-[#2D6A4F] transition-colors">{{ $formation->title }}</h3>
@@ -151,7 +157,7 @@
         {{-- État vide --}}
         @if($activeEnrollments->isEmpty() && $completedEnrollments->isEmpty())
             <div class="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                <div class="text-6xl mb-4">📚</div>
+                <x-icon name="book" class="w-14 h-14 mx-auto mb-4 text-[#2D6A4F]/40" />
                 <h2 class="text-xl font-display font-semibold text-[#1A1A2E] mb-2">Aucune formation en cours</h2>
                 <p class="text-gray-500 mb-6 max-w-md mx-auto">Découvrez nos formations en agroécologie et commencez votre parcours d'apprentissage dès aujourd'hui.</p>
                 <a href="{{ route('formation.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-[#2D6A4F] text-white font-medium rounded-xl hover:bg-[#40916C] transition-colors">

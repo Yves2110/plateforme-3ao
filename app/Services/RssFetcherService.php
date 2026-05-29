@@ -4,20 +4,28 @@ namespace App\Services;
 
 use App\Models\RssFeedItem;
 use App\Models\RssSource;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class RssFetcherService
 {
+    public function __construct(
+        protected SafeUrlFetcher $safeFetcher
+    ) {}
+
     public function fetchSource(RssSource $source): int
     {
         if (! $source->is_active) {
             return 0;
         }
 
-        $response = Http::timeout(20)
-            ->withHeaders(['User-Agent' => 'Plateforme3AO-RSS/1.0'])
-            ->get($source->url);
+        try {
+            $response = $this->safeFetcher->get($source->url, [
+                'timeout' => 20,
+                'headers' => ['User-Agent' => 'Plateforme3AO-RSS/1.0'],
+            ]);
+        } catch (\InvalidArgumentException) {
+            return 0;
+        }
 
         if (! $response->successful()) {
             return 0;

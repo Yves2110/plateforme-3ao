@@ -359,14 +359,12 @@
                             <div class="absolute top-0 left-0 right-0 h-1.5 bg-[#F4C842] z-10"></div>
                         @endif
                         <div class="flex gap-0 {{ $evStatus === 'expired' ? 'grayscale' : '' }}">
-                            {{-- Date block --}}
                             <div class="w-20 shrink-0 flex flex-col items-center justify-center py-5 text-white rounded-l-2xl
                                         {{ $evStatus === 'expired' ? 'bg-gray-400' : 'bg-[#2D6A4F]' }}">
                                 <span class="font-display font-bold text-2xl leading-none">{{ $event->start_date->format('d') }}</span>
                                 <span class="text-xs uppercase tracking-wider mt-1 text-white/80">{{ $event->start_date->translatedFormat('M') }}</span>
                                 <span class="text-xs text-white/60">{{ $event->start_date->format('Y') }}</span>
                             </div>
-                            {{-- Event info --}}
                             <div class="flex-1 p-4">
                                 <div class="flex flex-wrap items-center gap-2 mb-2">
                                     <span class="badge badge-evenement">{{ $event->type ?? 'Événement' }}</span>

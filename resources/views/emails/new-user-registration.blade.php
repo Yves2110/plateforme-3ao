@@ -27,6 +27,12 @@
             <ul>
                 <li><strong>Nom :</strong> {{ $user->name }}</li>
                 <li><strong>Email :</strong> {{ $user->email }}</li>
+                @if($user->organization)
+                    <li><strong>Organisation :</strong> {{ $user->organization }}</li>
+                @endif
+                @if($user->registration_reason)
+                    <li><strong>Motif de la demande :</strong> {{ $user->registration_reason }}</li>
+                @endif
                 <li><strong>Date d'inscription :</strong> {{ $user->created_at->format('d/m/Y à H:i') }}</li>
             </ul>
             

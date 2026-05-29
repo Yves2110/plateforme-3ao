@@ -1,13 +1,13 @@
 @props([
     'title'       => config('app.name'),
-    'description' => 'Plateforme collaborative pour l\'agroécologie en Afrique de l\'Ouest — Alliance 3AO',
+    'description' => 'Plateforme collaborative pour l\'agroécologie en Afrique de l\'Ouest Alliance 3AO',
     'image'       => null,
     'canonical'   => null,
     'type'        => 'website',
 ])
 @php
     $siteName   = config('app.name', 'Plateforme 3AO');
-    $fullTitle   = $title !== $siteName ? $title . ' — ' . $siteName : $siteName;
+    $fullTitle   = $title !== $siteName ? $title . ' ' . $siteName : $siteName;
     $ogImage     = $image ?? asset(config('brand.logo', 'images/logo-3ao.jpeg'));
     $canonicalUrl = $canonical ?? url()->current();
     $desc        = Str::limit(strip_tags($description), 155);

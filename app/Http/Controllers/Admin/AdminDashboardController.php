@@ -12,6 +12,7 @@ use App\Models\Media;
 use App\Models\ForumThread;
 use App\Models\ForumReply;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -86,12 +87,11 @@ class AdminDashboardController extends Controller
         ];
     }
 
-    private function getRecentActivity(): array
+    private function getRecentActivity(int $perPage = 5): LengthAwarePaginator
     {
         $activities = collect();
 
-        // Derniers utilisateurs
-        User::latest()->take(3)->get()->each(fn($u) =>
+        User::latest()->take(20)->get()->each(fn ($u) =>
             $activities->push([
                 'type' => 'user',
                 'icon' => 'user',
@@ -102,8 +102,7 @@ class AdminDashboardController extends Controller
             ])
         );
 
-        // Dernières actualités
-        Actualite::latest()->take(3)->get()->each(fn($a) =>
+        Actualite::latest()->take(20)->get()->each(fn ($a) =>
             $activities->push([
                 'type' => 'news',
                 'icon' => 'document',
@@ -114,8 +113,7 @@ class AdminDashboardController extends Controller
             ])
         );
 
-        // Derniers événements
-        Event::latest()->take(3)->get()->each(fn($e) =>
+        Event::latest()->take(20)->get()->each(fn ($e) =>
             $activities->push([
                 'type' => 'event',
                 'icon' => 'calendar',
@@ -126,6 +124,18 @@ class AdminDashboardController extends Controller
             ])
         );
 
-        return $activities->sortByDesc('time')->take(10)->values()->all();
+        $sorted = $activities->sortByDesc('time')->values();
+        $page = max(1, (int) request()->query('activity_page', 1));
+
+        return new LengthAwarePaginator(
+            $sorted->forPage($page, $perPage)->values(),
+            $sorted->count(),
+            $perPage,
+            $page,
+            [
+                'path' => route('admin.dashboard'),
+                'pageName' => 'activity_page',
+            ]
+        );
     }
 }

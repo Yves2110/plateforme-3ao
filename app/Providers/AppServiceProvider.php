@@ -64,6 +64,10 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
         });
 
+        RateLimiter::for('widget', function (Request $request) {
+            return Limit::perMinute(60)->by($request->ip());
+        });
+
         View::composer('admin.layouts.admin', \App\View\Composers\AdminSidebarComposer::class);
         View::composer('layouts.app', \App\View\Composers\FeaturedEventComposer::class);
 

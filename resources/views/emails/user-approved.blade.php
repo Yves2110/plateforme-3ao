@@ -30,11 +30,11 @@
             <div class="credentials">
                 <h3>Vos identifiants de connexion :</h3>
                 <p><strong>Email :</strong> {{ $user->email }}</p>
-                <p><strong>Mot de passe :</strong> {{ $password }}</p>
+                <p><strong>Mot de passe :</strong> celui que vous avez défini lors de votre inscription.</p>
             </div>
             
             <div class="warning">
-                <strong>Important :</strong> Pour des raisons de sécurité, nous vous recommandons de changer votre mot de passe dès votre première connexion.
+                <strong>Important :</strong> Utilisez le mot de passe saisi dans le formulaire d'inscription. Vous pourrez le modifier depuis votre profil après connexion.
             </div>
             
             <center>

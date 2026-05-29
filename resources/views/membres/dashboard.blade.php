@@ -6,7 +6,10 @@
         <div class="flex items-center gap-4 mb-8">
             <img src="{{ $user->profile_photo_url }}" class="w-14 h-14 rounded-full ring-2 ring-[#52B788] ring-offset-2" alt="">
             <div>
-                <h1 class="text-2xl font-display font-bold text-[#1A1A2E]">Bonjour, {{ $user->name }} 👋</h1>
+                <h1 class="text-2xl font-display font-bold text-[#1A1A2E] flex items-center gap-2">
+                    Bonjour, {{ $user->name }}
+                    <x-icon name="wave" class="w-6 h-6 text-[#2D6A4F]" />
+                </h1>
                 <p class="text-sm text-gray-500">Membre depuis {{ $user->created_at->translatedFormat('F Y') }}</p>
             </div>
             <a href="{{ route('membre.show', $user) }}" class="ml-auto text-sm text-[#2D6A4F] hover:underline font-medium">
@@ -14,25 +17,27 @@
             </a>
         </div>
 
-        {{-- Actions rapides selon permissions --}}
         @php
             $quickLinks = array_filter([
-                auth()->user()->can('publier-bibliotheque') ? ['label' => 'Ajouter une ressource', 'route' => 'admin.ressources.create', 'icon' => '📚'] : null,
-                auth()->user()->can('soumettre-acteur') || auth()->user()->can('gerer-carte') ? ['label' => 'Ajouter un acteur', 'route' => 'admin.acteurs.create', 'icon' => '🗺'] : null,
-                auth()->user()->can('creer-evenements') ? ['label' => 'Créer un événement', 'route' => 'admin.evenements.create', 'icon' => '📅'] : null,
-                auth()->user()->can('contribuer-multimedia') ? ['label' => 'Ajouter un média', 'route' => 'admin.medias.create', 'icon' => '🎬'] : null,
-                auth()->user()->can('publier-actualites') ? ['label' => 'Publier une actualité', 'route' => 'admin.actualites.create', 'icon' => '📰'] : null,
+                auth()->user()->can('publier-bibliotheque') ? ['label' => 'Ajouter une ressource', 'route' => 'admin.ressources.create', 'icon' => 'book'] : null,
+                auth()->user()->can('soumettre-acteur') || auth()->user()->can('gerer-carte') ? ['label' => 'Ajouter un acteur', 'route' => 'admin.acteurs.create', 'icon' => 'map'] : null,
+                auth()->user()->can('creer-evenements') ? ['label' => 'Créer un événement', 'route' => 'admin.evenements.create', 'icon' => 'calendar'] : null,
+                auth()->user()->can('contribuer-multimedia') ? ['label' => 'Ajouter un média', 'route' => 'admin.medias.create', 'icon' => 'film'] : null,
+                auth()->user()->can('publier-actualites') ? ['label' => 'Publier une actualité', 'route' => 'admin.actualites.create', 'icon' => 'news'] : null,
             ]);
         @endphp
 
         @if(count($quickLinks))
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-8">
-            <h2 class="font-semibold text-[#1A1A2E] mb-4">⚡ Actions rapides</h2>
+            <h2 class="font-semibold text-[#1A1A2E] mb-4 flex items-center gap-2">
+                <x-icon name="target" class="w-5 h-5 text-[#D4A017]" />
+                Actions rapides
+            </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 @foreach($quickLinks as $link)
                     <a href="{{ route($link['route']) }}"
                        class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-[#52B788] hover:bg-[#F8F5F0] transition-colors">
-                        <span class="text-xl">{{ $link['icon'] }}</span>
+                        <x-icon :name="$link['icon']" class="w-5 h-5 text-[#2D6A4F]" />
                         <span class="text-sm font-medium text-gray-700">{{ $link['label'] }}</span>
                     </a>
                 @endforeach
@@ -45,30 +50,40 @@
         </div>
         @endif
 
-        {{-- KPIs --}}
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
             @foreach([
-                ['label' => 'Discussions', 'count' => $threads->count(), 'icon' => '💬'],
-                ['label' => 'Ressources', 'count' => $ressources->count(), 'icon' => '📚'],
-                ['label' => 'Actualités', 'count' => $actualites->count(), 'icon' => '📰'],
+                ['label' => 'Discussions', 'count' => $threads->count(), 'icon' => 'chat'],
+                ['label' => 'Ressources', 'count' => $ressources->count(), 'icon' => 'book'],
+                ['label' => 'Actualités', 'count' => $actualites->count(), 'icon' => 'news'],
             ] as $kpi)
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
-                <div class="text-2xl mb-1">{{ $kpi['icon'] }}</div>
+                <div class="flex justify-center mb-1"><x-icon :name="$kpi['icon']" class="w-6 h-6 text-[#2D6A4F]" /></div>
                 <div class="text-2xl font-bold text-[#2D6A4F]">{{ $kpi['count'] }}</div>
                 <div class="text-xs text-gray-500">{{ $kpi['label'] }}</div>
             </div>
             @endforeach
-            <a href="{{ route('communaute.create') }}" class="bg-[#2D6A4F] text-white rounded-2xl shadow-sm p-4 text-center hover:bg-[#40916C] transition-colors flex flex-col items-center justify-center gap-1">
-                <div class="text-2xl">✏️</div>
-                <div class="text-sm font-semibold">Nouvelle discussion</div>
+            <a href="{{ route('learning.dashboard') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center hover:border-[#52B788] hover:bg-[#F8F5F0] transition-colors flex flex-col items-center justify-center gap-1">
+                <x-icon name="graduation" class="w-6 h-6 text-[#2D6A4F]" />
+                <div class="text-sm font-semibold text-[#2D6A4F]">Mon apprentissage</div>
             </a>
         </div>
 
-        {{-- Mes discussions --}}
+        <div class="flex flex-wrap gap-3 mb-8">
+            <a href="{{ route('communaute.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2D6A4F] text-white text-sm font-semibold rounded-xl hover:bg-[#40916C] transition-colors">
+                <x-icon name="news" class="w-5 h-5" />
+                Nouvelle discussion
+            </a>
+            <a href="{{ route('formation.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">
+                <x-icon name="graduation" class="w-5 h-5 text-[#2D6A4F]" />
+                Parcourir les formations
+            </a>
+        </div>
+
         @if($threads->count())
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6">
-            <div class="px-5 py-4 border-b border-gray-50">
-                <h2 class="font-semibold text-[#1A1A2E]">💬 Mes discussions</h2>
+            <div class="px-5 py-4 border-b border-gray-50 flex items-center gap-2">
+                <x-icon name="chat" class="w-5 h-5 text-[#2D6A4F]" />
+                <h2 class="font-semibold text-[#1A1A2E]">Mes discussions</h2>
             </div>
             <div class="divide-y divide-gray-50">
                 @foreach($threads as $thread)
@@ -87,11 +102,11 @@
         </div>
         @endif
 
-        {{-- Mes ressources --}}
         @if($ressources->count())
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6">
-            <div class="px-5 py-4 border-b border-gray-50">
-                <h2 class="font-semibold text-[#1A1A2E]">📚 Mes ressources</h2>
+            <div class="px-5 py-4 border-b border-gray-50 flex items-center gap-2">
+                <x-icon name="book" class="w-5 h-5 text-[#2D6A4F]" />
+                <h2 class="font-semibold text-[#1A1A2E]">Mes ressources</h2>
             </div>
             <div class="divide-y divide-gray-50">
                 @foreach($ressources as $r)
@@ -110,9 +125,11 @@
         </div>
         @endif
 
-        {{-- Zone danger : suppression de compte --}}
         <div class="bg-white rounded-2xl border border-red-100 shadow-sm p-5 mt-8">
-            <h2 class="font-semibold text-red-700 mb-1">⚠️ Zone de danger</h2>
+            <h2 class="font-semibold text-red-700 mb-1 flex items-center gap-2">
+                <x-icon name="warning" class="w-5 h-5" />
+                Zone de danger
+            </h2>
             <p class="text-sm text-gray-500 mb-4">La suppression de votre compte est irréversible. Toutes vos données personnelles seront effacées sous 30 jours.</p>
             <form method="POST" action="{{ route('membre.delete') }}"
                   x-data="{ open: false }"

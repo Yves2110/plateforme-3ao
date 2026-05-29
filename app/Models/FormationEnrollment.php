@@ -42,6 +42,11 @@ class FormationEnrollment extends Model
         return $this->belongsTo(Formation::class);
     }
 
+    public function certificate()
+    {
+        return $this->hasOne(FormationCertificate::class, 'enrollment_id');
+    }
+
     public function progresses()
     {
         return $this->hasMany(FormationProgress::class, 'user_id', 'user_id')
@@ -69,6 +74,17 @@ class FormationEnrollment extends Model
     public function isCompleted(): bool
     {
         return $this->status === self::STATUS_COMPLETED;
+    }
+
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            self::STATUS_PENDING => 'En attente',
+            self::STATUS_ACTIVE => 'Active',
+            self::STATUS_COMPLETED => 'Terminée',
+            self::STATUS_CANCELLED => 'Annulée',
+            default => (string) $this->status,
+        };
     }
 
     public function activate(): void

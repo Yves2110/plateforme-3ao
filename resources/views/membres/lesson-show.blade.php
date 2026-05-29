@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">{{ $lesson->title }} — {{ $formation->title }}</x-slot>
+    <x-slot name="title">{{ $lesson->title }}   {{ $formation->title }}</x-slot>
     <x-slot name="description">{{ Str::limit(strip_tags($lesson->description), 150) }}</x-slot>
 
     {{-- Header compact --}}
@@ -15,12 +15,12 @@
                 </div>
                 <div class="hidden sm:flex items-center gap-2">
                     @if($prevLesson)
-                        <a href="{{ route('learning.lesson', [$formation->slug, $prevLesson]) }}" class="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Leçon précédente">
+                        <a href="{{ route($prevLesson->learningRouteName(), [$formation->slug, $prevLesson]) }}" class="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Leçon précédente">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                         </a>
                     @endif
                     @if($nextLesson)
-                        <a href="{{ route('learning.lesson', [$formation->slug, $nextLesson]) }}" class="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Leçon suivante">
+                        <a href="{{ route($nextLesson->learningRouteName(), [$formation->slug, $nextLesson]) }}" class="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Leçon suivante">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
                     @endif
@@ -69,6 +69,12 @@
                                 </audio>
                             </div>
                         @endif
+                    @elseif($lesson->isText() && $lesson->content)
+                        <div class="p-6 md:p-8">
+                            <div class="prose prose-green max-w-none text-gray-700">
+                                {!! \Illuminate\Support\Str::markdown($lesson->content) !!}
+                            </div>
+                        </div>
                     @endif
 
                     {{-- Description de la leçon --}}
@@ -92,7 +98,7 @@
                 {{-- Navigation mobile --}}
                 <div class="flex items-center justify-between sm:hidden">
                     @if($prevLesson)
-                        <a href="{{ route('learning.lesson', [$formation->slug, $prevLesson]) }}" class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl">
+                        <a href="{{ route($prevLesson->learningRouteName(), [$formation->slug, $prevLesson]) }}" class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                             Précédent
                         </a>
@@ -100,7 +106,7 @@
                         <span></span>
                     @endif
                     @if($nextLesson)
-                        <a href="{{ route('learning.lesson', [$formation->slug, $nextLesson]) }}" class="flex items-center gap-2 px-4 py-2 bg-[#2D6A4F] text-white rounded-xl">
+                        <a href="{{ route($nextLesson->learningRouteName(), [$formation->slug, $nextLesson]) }}" class="flex items-center gap-2 px-4 py-2 bg-[#2D6A4F] text-white rounded-xl">
                             Suivant
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
@@ -114,18 +120,28 @@
                             <h3 class="font-semibold text-[#1A1A2E]">Avancement dans la formation</h3>
                             <p class="text-sm text-gray-500">Marquez cette leçon comme terminée pour continuer</p>
                         </div>
-                        <button id="markCompleteBtn"
-                                data-lesson-id="{{ $lesson->id }}"
-                                data-formation-id="{{ $formation->id }}"
-                                class="px-6 py-3 {{ $progress->isCompleted() ? 'bg-green-100 text-green-700' : 'bg-[#2D6A4F] text-white hover:bg-[#40916C]' }} font-medium rounded-xl transition-colors flex items-center gap-2">
-                            @if($progress->isCompleted())
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                Leçon terminée
-                            @else
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Marquer comme terminée
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button id="markCompleteBtn"
+                                    data-lesson-id="{{ $lesson->id }}"
+                                    data-formation-id="{{ $formation->id }}"
+                                    class="px-6 py-3 {{ $progress->isCompleted() ? 'bg-green-100 text-green-700' : 'bg-[#2D6A4F] text-white hover:bg-[#40916C]' }} font-medium rounded-xl transition-colors flex items-center gap-2">
+                                @if($progress->isCompleted())
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Leçon terminée
+                                @else
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Marquer comme terminée
+                                @endif
+                            </button>
+                            @if($nextLesson)
+                                <a id="continueNextLink"
+                                   href="{{ route($nextLesson->learningRouteName(), [$formation->slug, $nextLesson]) }}"
+                                   class="px-6 py-3 border border-[#2D6A4F] text-[#2D6A4F] font-medium rounded-xl hover:bg-[#2D6A4F]/5 transition-colors flex items-center gap-2 {{ $progress->isCompleted() ? '' : 'hidden' }}">
+                                    Leçon suivante
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
                             @endif
-                        </button>
+                        </div>
                     </div>
                 </div>
 
@@ -151,7 +167,7 @@
                                             $lesCompleted = $lesProgress && $lesProgress->isCompleted();
                                             $isCurrent = $les->id === $lesson->id;
                                         @endphp
-                                        <a href="{{ route('learning.lesson', [$formation->slug, $les]) }}"
+                                        <a href="{{ route($les->learningRouteName(), [$formation->slug, $les]) }}"
                                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors {{ $isCurrent ? 'bg-[#2D6A4F] text-white' : 'text-gray-600 hover:bg-gray-50' }}">
                                             @if($lesCompleted)
                                                 <svg class="w-4 h-4 text-green-500 {{ $isCurrent ? 'text-white' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -194,25 +210,53 @@
             const lessonId = btn.dataset.lessonId;
             const formationId = btn.dataset.formationId;
 
-            fetch(`/mon-apprentissage/formations/${formationId}/lecons/${lessonId}/completer`, {
+            if (btn.classList.contains('bg-green-100')) {
+                const nextLink = document.getElementById('continueNextLink');
+                if (nextLink?.href) {
+                    window.location.href = nextLink.href;
+                }
+                return;
+            }
+
+            btn.disabled = true;
+
+            fetch('{{ route('learning.complete', [$formation->slug, $lesson]) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
                 },
                 body: JSON.stringify({ time_spent: timeSpent })
             })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) throw new Error('complete_failed');
+                return r.json();
+            })
             .then(data => {
-                if (data.success) {
-                    btn.classList.remove('bg-[#2D6A4F]', 'text-white', 'hover:bg-[#40916C]');
-                    btn.classList.add('bg-green-100', 'text-green-700');
-                    btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Leçon terminée`;
+                if (!data.success) return;
 
-                    if (data.completed) {
-                        alert('🎉 Félicitations ! Vous avez terminé cette formation.');
+                btn.disabled = false;
+                btn.classList.remove('bg-[#2D6A4F]', 'text-white', 'hover:bg-[#40916C]');
+                btn.classList.add('bg-green-100', 'text-green-700');
+                btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Leçon terminée`;
+
+                document.getElementById('continueNextLink')?.classList.remove('hidden');
+
+                if (data.redirect_url) {
+                    btn.dataset.redirectUrl = data.redirect_url;
+                    if (data.certificate_issued) {
+                        alert('Félicitations ! Vous avez terminé la formation. Votre certificat est prêt.');
                     }
+                    setTimeout(() => { window.location.href = data.redirect_url; }, 600);
+                } else if (data.completed) {
+                    alert('Félicitations ! Vous avez terminé cette formation.');
+                    window.location.href = '{{ route('learning.show', $formation->slug) }}';
                 }
+            })
+            .catch(() => {
+                btn.disabled = false;
+                alert('Impossible d\'enregistrer la progression. Réessayez.');
             });
         });
     </script>

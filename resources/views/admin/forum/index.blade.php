@@ -39,7 +39,7 @@
                             </a>
                         </td>
                         <td class="px-5 py-3 text-gray-600 text-xs">{{ $t->category }}</td>
-                        <td class="px-5 py-3 text-gray-600 text-xs">{{ $t->author?->name ?? '—' }}</td>
+                        <td class="px-5 py-3 text-gray-600 text-xs">{{ $t->author?->name ?? ' ' }}</td>
                         <td class="px-5 py-3 text-gray-600">{{ $t->replies->count() }}</td>
                         <td class="px-5 py-3">
                             <div class="flex flex-wrap gap-1">

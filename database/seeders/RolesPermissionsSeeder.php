@@ -78,7 +78,7 @@ class RolesPermissionsSeeder extends Seeder
         // Visiteur (rôle par défaut, aucune permission spéciale)
         Role::firstOrCreate(['name' => 'visiteur', 'guard_name' => 'web']);
 
-        // ===== Compte admin de démonstration =====
+        // ===== Compte admin de démonstration (sans statut propriétaire) =====
         $adminUser = User::firstOrCreate(
             ['email' => 'admin@3ao.org'],
             [
@@ -89,16 +89,37 @@ class RolesPermissionsSeeder extends Seeder
                 'approved_at'       => now(),
                 'organization'      => 'Secrétariat 3AO',
                 'country'           => 'Burkina Faso',
+                'is_platform_owner' => false,
             ]
         );
         $adminUser->forceFill([
             'approval_status'   => 'approved',
             'email_verified_at' => $adminUser->email_verified_at ?? now(),
             'approved_at'       => $adminUser->approved_at ?? now(),
+            'is_platform_owner' => false,
         ])->save();
         $adminUser->assignRole('super_admin');
 
+        // ===== Propriétaire de la plateforme (config/platform.php) =====
+        User::query()->where('is_platform_owner', true)->update(['is_platform_owner' => false]);
+        $ownerEmail = config('platform.owner_email');
+        $owner = User::where('email', $ownerEmail)->first();
+        if ($owner) {
+            $owner->forceFill([
+                'is_platform_owner' => true,
+                'approval_status'   => 'approved',
+                'approved_at'       => $owner->approved_at ?? now(),
+                'email_verified_at' => $owner->email_verified_at ?? now(),
+            ])->save();
+            if (! $owner->hasRole('super_admin')) {
+                $owner->assignRole('super_admin');
+            }
+            $this->command->info("✅ Propriétaire plateforme : {$ownerEmail}");
+        } else {
+            $this->command->warn("⚠ Aucun compte {$ownerEmail} trouvé. Créez-le puis relancez le seeder ou migrate.");
+        }
+
         $this->command->info('✅ Rôles, permissions et compte admin créés !');
-        $this->command->info('   Email: admin@3ao.org | Mot de passe: Admin3AO@2026!');
+        $this->command->info('   Demo admin : admin@3ao.org | Mot de passe: Admin3AO@2026!');
     }
 }

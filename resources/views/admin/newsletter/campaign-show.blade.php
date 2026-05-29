@@ -75,7 +75,7 @@
         <p class="text-sm text-gray-600">
             Envoyée le {{ $campaign->sent_at->format('d/m/Y H:i') }}
             @if($campaign->sendSummary())
-                — {{ $campaign->sendSummary() }}
+                  {{ $campaign->sendSummary() }}
             @endif
         </p>
     @endif

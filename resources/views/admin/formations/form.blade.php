@@ -152,11 +152,11 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">URL d'inscription</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Lien externe (optionnel)</label>
                     <input type="url" name="registration_url" value="{{ old('registration_url', $formation->registration_url) }}"
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788]"
-                           placeholder="https://...">
-                    <p class="text-xs text-gray-500 mt-1">Lien externe ou interne vers le formulaire d'inscription</p>
+                           placeholder="https://zoom.us/...">
+                    <p class="text-xs text-gray-500 mt-1">Zoom, visioconférence ou site partenaire — affiché uniquement après inscription sur la plateforme. Le bouton « S'inscrire » inscrit toujours sur 3AO.</p>
                 </div>
             </div>
         </div>
@@ -208,6 +208,32 @@
                 @error('thumbnail')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
             </div>
         </div>
+
+        @if($formation->id)
+        <div class="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+            <h2 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#2D6A4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                Contenu pédagogique (LMS)
+            </h2>
+            <p class="text-sm text-gray-600">Organisez modules, leçons et quiz pour le parcours en ligne accessible via « Mon apprentissage ».</p>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('admin.formations.modules.index', $formation) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#2D6A4F] text-white text-sm font-medium rounded-xl hover:bg-[#40916C]">
+                    Modules & leçons
+                </a>
+                <a href="{{ route('admin.formations.quizzes.index', $formation) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-xl hover:bg-purple-700">
+                    Quiz
+                </a>
+                <a href="{{ route('admin.formations.enrollments.index', $formation) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700">
+                    Inscriptions
+                </a>
+                @if($formation->is_validated && $formation->hasLmsContent())
+                    <a href="{{ route('formation.show', $formation->slug) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-50">
+                        Voir la fiche publique
+                    </a>
+                @endif
+            </div>
+        </div>
+        @endif
 
         {{-- Boutons d'action --}}
         <div class="flex items-center gap-4">

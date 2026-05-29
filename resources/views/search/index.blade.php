@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Recherche — {{ $q }}</x-slot>
+    <x-slot name="title">Recherche   {{ $q }}</x-slot>
 
     <div class="bg-[#F8F5F0] border-b border-gray-200 py-8">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

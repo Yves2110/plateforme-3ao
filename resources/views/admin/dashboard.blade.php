@@ -9,10 +9,10 @@
 @endpush
 
 @section('content')
-<div class="py-6 space-y-8">
+<div class="py-5 space-y-6">
 
     {{-- Stats cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3">
         @foreach([
             ['label' => 'Utilisateurs',  'value' => $stats['users'],      'color' => 'bg-blue-500',   'route' => 'admin.utilisateurs.index', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197'],
             ['label' => 'Actualités',    'value' => $stats['actualites'], 'color' => 'bg-green-500',  'route' => 'admin.actualites.index',   'icon' => 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7'],
@@ -24,17 +24,17 @@
             ['label' => 'Réponses',      'value' => $stats['replies'],    'color' => 'bg-gray-500',   'route' => 'admin.forum.index',        'icon' => 'M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6'],
         ] as $stat)
             <a href="{{ route($stat['route']) }}"
-               class="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow group">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-10 h-10 {{ $stat['color'] }} rounded-xl flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $stat['icon'] }}"/>
-                        </svg>
-                    </div>
-                    <svg class="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+               class="flex items-center gap-2.5 sm:gap-3 bg-white rounded-xl border border-gray-100 px-3 py-2.5 sm:px-3.5 sm:py-3 hover:shadow-sm hover:border-gray-200 transition-all group min-w-0">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 shrink-0 {{ $stat['color'] }} rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $stat['icon'] }}"/>
+                    </svg>
                 </div>
-                <p class="font-display text-2xl font-bold text-[#1A1A2E]">{{ number_format($stat['value']) }}</p>
-                <p class="text-xs text-gray-500 mt-0.5">{{ $stat['label'] }}</p>
+                <div class="flex-1 min-w-0">
+                    <p class="font-display text-lg sm:text-xl font-bold text-[#1A1A2E] leading-tight tabular-nums">{{ number_format($stat['value']) }}</p>
+                    <p class="text-[11px] sm:text-xs text-gray-500 truncate leading-tight">{{ $stat['label'] }}</p>
+                </div>
+                <svg class="w-3.5 h-3.5 shrink-0 text-gray-300 group-hover:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </a>
         @endforeach
     </div>
@@ -89,7 +89,9 @@
         <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-5">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="font-display font-semibold text-gray-800">Activité récente</h2>
-                <span class="text-xs text-gray-400">Dernières 24h</span>
+                @if($recentActivity->total() > 0)
+                    <span class="text-xs text-gray-400">{{ $recentActivity->total() }} activités</span>
+                @endif
             </div>
             <div class="space-y-3">
                 @forelse($recentActivity as $activity)
@@ -116,6 +118,11 @@
                     <p class="text-sm text-gray-400 text-center py-6">Aucune activité récente</p>
                 @endforelse
             </div>
+            @if($recentActivity->hasPages())
+                <div class="mt-4 pt-3 border-t border-gray-100">
+                    {{ $recentActivity->onEachSide(0)->links('pagination::simple-tailwind') }}
+                </div>
+            @endif
         </div>
 
         {{-- Acteurs en attente de validation --}}

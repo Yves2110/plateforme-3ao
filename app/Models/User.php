@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens;
+    use HasApiTokens, HasUuid;
 
     /** @use HasFactory<UserFactory> */
     use HasFactory;
@@ -39,7 +40,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'country',
         'organization',
+        'registration_reason',
         'bio',
+        'is_active',
     ];
 
     /**
@@ -72,7 +75,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'approved_at' => 'datetime',
             'admin_guide_completed_at' => 'datetime',
+            'is_active' => 'boolean',
+            'is_platform_owner' => 'boolean',
             'password' => 'hashed',
         ];
     }
@@ -123,5 +129,64 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
 
         return $this->hasAnyPermission($backOfficePermissions);
+    }
+
+    public function isPlatformOwner(): bool
+    {
+        return (bool) $this->is_platform_owner;
+    }
+
+    /** Compte fondateur masqué aux autres administrateurs. */
+    public function scopeVisibleToAdmin($query, User $actor)
+    {
+        if ($actor->isPlatformOwner()) {
+            return $query;
+        }
+
+        return $query->where('is_platform_owner', false);
+    }
+
+    public function visibleToAdmin(User $actor): bool
+    {
+        if ($this->isPlatformOwner() && ! $actor->isPlatformOwner()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function canAdminEdit(User $actor): bool
+    {
+        if (! $this->visibleToAdmin($actor)) {
+            return false;
+        }
+
+        if ($this->hasRole('super_admin') && ! $actor->isPlatformOwner()) {
+            return $actor->id === $this->id;
+        }
+
+        return true;
+    }
+
+    public function canAdminToggle(User $actor): bool
+    {
+        if ($actor->id === $this->id) {
+            return false;
+        }
+
+        if ($this->isPlatformOwner()) {
+            return false;
+        }
+
+        if ($this->hasRole('super_admin')) {
+            return $actor->isPlatformOwner();
+        }
+
+        return $this->visibleToAdmin($actor);
+    }
+
+    public function canAdminDelete(User $actor): bool
+    {
+        return $this->canAdminToggle($actor);
     }
 }

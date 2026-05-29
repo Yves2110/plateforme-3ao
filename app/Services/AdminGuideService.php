@@ -140,17 +140,73 @@ class AdminGuideService
             ];
         }
 
-        if ($user->can('gerer-formations')) {
+        if ($user->can('gerer-formations') || $user->can('administrer-utilisateurs')) {
             $steps[] = [
-                'title'   => 'Formations',
-                'text'    => 'Concevez des parcours de formation en ligne pour les membres.',
+                'title'   => 'Formations — Hub',
+                'text'    => 'Le Hub Formation sert à la fois de vitrine publique et de base pour vos parcours en ligne (LMS). Cette rubrique centralise toutes vos formations : ateliers, cours, webinaires et certifications.',
                 'actions' => [
-                    'Créer des formations et définir leur programme.',
-                    'Ajouter des modules, leçons et quiz d\'évaluation.',
-                    'Valider, publier ou retirer une formation.',
+                    'Consulter la liste et filtrer par statut (validées / en attente) ou par type.',
+                    'Créer une nouvelle formation avec « Nouvelle formation ».',
+                    'Repérer la colonne « Contenu LMS » pour voir si un parcours en ligne existe déjà.',
                 ],
                 'target'  => 'admin-nav-formations',
                 'label'   => 'Formations',
+            ];
+
+            $steps[] = [
+                'title'   => 'Formations — Fiche et publication',
+                'text'    => 'Commencez par la fiche descriptive visible sur le site public, puis préparez le contenu pédagogique.',
+                'actions' => [
+                    'Renseigner titre, type, description, objectifs, public cible, dates et tarif (0 = gratuit).',
+                    'Téléverser une image de couverture pour la fiche publique.',
+                    'Cocher « Formation validée » pour la rendre visible dans le Hub Formation.',
+                    'Après enregistrement, utiliser le panneau « Contenu pédagogique (LMS) » en bas de la fiche.',
+                ],
+                'target'  => null,
+                'label'   => null,
+            ];
+
+            $steps[] = [
+                'title'   => 'Formations — Modules et leçons',
+                'text'    => 'Structurez le parcours apprenant en modules (chapitres) contenant des leçons. Seuls les modules et leçons publiés sont visibles dans « Mon apprentissage ».',
+                'actions' => [
+                    'Depuis la liste ou la fiche : ouvrir « Modules & leçons » (icône livre).',
+                    'Créer des modules dans l\'ordre souhaité, puis les publier.',
+                    'Ajouter des leçons par module : texte (Markdown), vidéo (URL ou fichier), PDF, audio ou quiz.',
+                    'Publier chaque leçon ; réorganiser l\'ordre par glisser-déposer si besoin.',
+                    'Les leçons texte acceptent titres, listes et tableaux en Markdown.',
+                ],
+                'target'  => null,
+                'label'   => null,
+            ];
+
+            $steps[] = [
+                'title'   => 'Formations — Quiz d\'évaluation',
+                'text'    => 'Les quiz valident les acquis. Ils sont rattachés à une leçon (de préférence de type « quiz ») et corrigés automatiquement.',
+                'actions' => [
+                    'Ouvrir « Quiz » depuis la liste des formations ou la fiche formation.',
+                    'Créer un quiz : choisir le module et la leçon associée.',
+                    'Ajouter des questions (choix unique, multiple, vrai/faux) avec points et explications.',
+                    'Définir le score minimum (%), le nombre de tentatives et éventuellement un temps limite.',
+                    'Publier le quiz : une réussite marque automatiquement la leçon comme terminée.',
+                ],
+                'target'  => null,
+                'label'   => null,
+            ];
+
+            $steps[] = [
+                'title'   => 'Formations — Inscriptions et certificats',
+                'text'    => 'Une fois le contenu publié et la formation validée, les membres s\'inscrivent depuis la fiche publique et suivent le parcours dans « Mon apprentissage ». À 100 % de progression, un certificat PDF aux couleurs 3AO est délivré automatiquement.',
+                'actions' => [
+                    'Formation gratuite : accès immédiat après inscription sur la plateforme.',
+                    'Formation payante : activer manuellement les inscriptions en attente.',
+                    'Exporter la liste des inscrits en Excel (CSV) depuis la page Inscriptions d\'une formation.',
+                    'Le certificat inclut nom, organisation, e-mail, titre de formation et numéro unique (3AO-ANNÉE-…).',
+                    'L\'apprenant le télécharge depuis son parcours ou « Mon apprentissage » (formations terminées).',
+                    'Vérifier le rendu final sur la fiche publique avant communication.',
+                ],
+                'target'  => null,
+                'label'   => null,
             ];
         }
 

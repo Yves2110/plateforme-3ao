@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">{{ $categoryName }} — Forum 3AO</x-slot>
+    <x-slot name="title">{{ $categoryName }}   Forum 3AO</x-slot>
 
     {{-- Header --}}
     <div class="bg-gradient-to-r from-[#2D6A4F] to-[#40916C] py-10">
@@ -28,7 +28,7 @@
         @endif
 
         <x-public-manage-bar
-            label="Forum — {{ $categoryName }}"
+            label="Forum   {{ $categoryName }}"
             :permissions="['moderer-forum', 'administrer-utilisateurs']"
             :list-route="route('admin.forum.index')"
         />

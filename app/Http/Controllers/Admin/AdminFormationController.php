@@ -20,6 +20,9 @@ class AdminFormationController extends Controller
     public function index(Request $request)
     {
         $query = Formation::with('author')
+            ->withCount([
+                'modules as published_modules_count' => fn ($q) => $q->where('is_published', true),
+            ])
             ->when($request->validated === '1', fn($q) => $q->where('is_validated', true))
             ->when($request->validated === '0', fn($q) => $q->where('is_validated', false))
             ->when($request->type, fn($q) => $q->where('type', $request->type))

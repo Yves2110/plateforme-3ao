@@ -107,16 +107,14 @@ class FormationQuizAttempt extends Model
             'answers' => $answers,
         ]);
 
-        // Si le quiz est réussi, marquer la leçon comme complétée
         if ($percentage >= $passingScore) {
-            FormationProgress::firstOrCreate(
+            FormationProgress::updateOrCreate(
                 [
                     'user_id' => $this->user_id,
                     'lesson_id' => $quiz->lesson_id,
                 ],
                 [
                     'completed_at' => now(),
-                    'time_spent_seconds' => 0,
                 ]
             );
         }

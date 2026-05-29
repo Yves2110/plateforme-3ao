@@ -13,6 +13,26 @@
             </div>
         @endif
 
+        <div class="mb-5 p-4 rounded-xl border border-gray-100 bg-gray-50/80 space-y-2 text-sm">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-gray-600 font-medium">Statut du compte :</span>
+                @include('admin.utilisateurs._approval-status', ['user' => $user])
+            </div>
+            @if($user->approved_at)
+                <p class="text-gray-500 text-xs">Approuvé le {{ $user->approved_at->format('d/m/Y à H:i') }}</p>
+            @endif
+            @if($user->isPlatformOwner())
+                <p class="text-xs text-[#2D6A4F] font-medium">Compte propriétaire de la plateforme (protégé)</p>
+            @endif
+            <p class="text-xs text-gray-500">
+                Compte {{ ($user->is_active ?? true) ? 'actif' : 'désactivé' }}
+            </p>
+            @if($user->approval_status === 'rejected' && $user->rejection_reason)
+                <p class="text-xs text-red-700"><span class="font-medium">Motif du refus :</span> {{ $user->rejection_reason }}</p>
+            @endif
+            <p class="text-xs text-gray-500">Inscrit le {{ $user->created_at->format('d/m/Y à H:i') }}</p>
+        </div>
+
         <form action="{{ route('admin.utilisateurs.update', $user) }}" method="POST" class="space-y-5">
             @csrf @method('PUT')
 
@@ -29,11 +49,19 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Rôle</label>
-                    <select name="role" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788] bg-white">
+                    <select name="role" required {{ ($user->isPlatformOwner() || ($user->hasRole('super_admin') && !auth()->user()->isPlatformOwner())) ? 'disabled' : '' }}
+                            class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788] bg-white disabled:bg-gray-100 disabled:text-gray-500">
                         @foreach($roles as $role)
+                            @if($role->name === 'super_admin' && !auth()->user()->isPlatformOwner())
+                                @continue
+                            @endif
                             <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
                         @endforeach
                     </select>
+                    @if($user->isPlatformOwner() || ($user->hasRole('super_admin') && !auth()->user()->isPlatformOwner()))
+                        <input type="hidden" name="role" value="super_admin">
+                        <p class="mt-1 text-xs text-gray-500">Le rôle super_admin ne peut être modifié que par le propriétaire de la plateforme.</p>
+                    @endif
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Organisation</label>
@@ -46,6 +74,14 @@
                            class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788]">
                 </div>
             </div>
+
+            @if($user->registration_reason)
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Motif de la demande (lecture seule)</label>
+                    <textarea readonly rows="3"
+                              class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-600 resize-none">{{ $user->registration_reason }}</textarea>
+                </div>
+            @endif
 
             {{-- Matrice de permissions granulaires --}}
             <div class="border border-gray-100 rounded-xl overflow-hidden">

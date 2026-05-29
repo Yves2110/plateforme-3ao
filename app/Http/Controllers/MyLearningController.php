@@ -3,21 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Formation;
+use App\Models\FormationCertificate;
 use App\Models\FormationEnrollment;
 use App\Models\FormationLesson;
 use App\Models\FormationProgress;
 use App\Models\FormationQuiz;
 use App\Models\FormationQuizAttempt;
+use App\Services\FormationCertificateService;
+use App\Services\FormationCompletionService;
+use App\Services\FormationEnrollmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class MyLearningController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
+    public function __construct(
+        private FormationCompletionService $completionService,
+        private FormationCertificateService $certificateService,
+        private FormationEnrollmentService $enrollmentService,
+    ) {}
     /**
      * Dashboard "Mes formations" - Liste des formations de l'utilisateur
      */
@@ -33,7 +37,7 @@ class MyLearningController extends Controller
             ->get();
 
         // Formations terminées
-        $completedEnrollments = FormationEnrollment::with('formation')
+        $completedEnrollments = FormationEnrollment::with(['formation', 'certificate'])
             ->where('user_id', $user->id)
             ->where('status', FormationEnrollment::STATUS_COMPLETED)
             ->latest('completed_at')
@@ -67,32 +71,15 @@ class MyLearningController extends Controller
     public function enroll(Request $request, Formation $formation)
     {
         $user = auth()->user();
+        $result = $this->enrollmentService->enroll($user, $formation);
 
-        // Vérifier si déjà inscrit
-        $existing = FormationEnrollment::where('user_id', $user->id)
-            ->where('formation_id', $formation->id)
-            ->first();
-
-        if ($existing) {
-            return redirect()->route('learning.show', $formation->slug)
-                ->with('info', 'Vous êtes déjà inscrit à cette formation.');
-        }
-
-        // Créer l'inscription
-        $enrollment = FormationEnrollment::create([
-            'user_id' => $user->id,
-            'formation_id' => $formation->id,
-            'status' => $formation->price > 0 ? FormationEnrollment::STATUS_PENDING : FormationEnrollment::STATUS_ACTIVE,
-            'paid_amount' => $formation->price > 0 ? 0 : null,
-            'enrolled_at' => $formation->price > 0 ? null : now(),
-        ]);
-
-        $message = $formation->price > 0
-            ? 'Inscription enregistrée. Paiement requis pour accéder au contenu.'
-            : 'Inscription confirmée ! Vous pouvez maintenant accéder au contenu.';
-
-        return redirect()->route('learning.show', $formation->slug)
-            ->with('success', $message);
+        return $this->enrollmentService->redirectAfterEnroll(
+            $formation,
+            $result['enrollment'],
+            $user,
+            $result['message'],
+            $result['created'] ? 'success' : 'info',
+        );
     }
 
     /**
@@ -107,13 +94,11 @@ class MyLearningController extends Controller
             ->where('formation_id', $formation->id)
             ->first();
 
-        if (!$enrollment || !$enrollment->isActive()) {
-            // Rediriger vers la page publique avec option d'inscription
+        if (! $enrollment || (! $enrollment->isActive() && ! $enrollment->isCompleted())) {
             return redirect()->route('formation.show', $formation->slug)
                 ->with('info', 'Inscrivez-vous pour accéder au contenu complet.');
         }
 
-        // Charger les modules avec leurs leçons
         $modules = $formation->publishedModules()
             ->with(['publishedLessons' => function ($q) use ($user) {
                 $q->with(['progresses' => function ($pq) use ($user) {
@@ -122,32 +107,22 @@ class MyLearningController extends Controller
             }])
             ->get();
 
-        // Calculer la progression globale
-        $totalLessons = $formation->total_lessons_count;
-        $completedLessons = FormationProgress::where('user_id', $user->id)
-            ->whereHas('lesson.module', function ($q) use ($formation) {
-                $q->where('formation_id', $formation->id);
-            })
-            ->whereNotNull('completed_at')
-            ->count();
+        $progress = $this->completionService->progressFor($user, $formation);
+        $certificate = $this->completionService->tryFinalize($user, $formation)
+            ?? $enrollment->certificate;
 
-        $progressPercent = $totalLessons > 0
-            ? round(($completedLessons / $totalLessons) * 100)
-            : 0;
-
-        // Mettre à jour le statut si 100% complété
-        if ($progressPercent === 100 && !$enrollment->isCompleted()) {
-            $enrollment->complete();
-        }
+        $enrollment->refresh();
 
         return view('membres.formation-show', compact(
             'formation',
             'modules',
             'enrollment',
-            'progressPercent',
-            'completedLessons',
-            'totalLessons'
-        ));
+            'certificate'
+        ) + [
+            'progressPercent' => $progress['percent'],
+            'completedLessons' => $progress['completed'],
+            'totalLessons' => $progress['total'],
+        ]);
     }
 
     /**
@@ -162,18 +137,23 @@ class MyLearningController extends Controller
             abort(404);
         }
 
+        $lesson->load('publishedQuiz');
+
+        if ($lesson->hasQuiz()) {
+            return redirect()->route('learning.quiz', [$formation->slug, $lesson]);
+        }
+
         // Vérifier l'inscription active
         $enrollment = FormationEnrollment::where('user_id', $user->id)
             ->where('formation_id', $formation->id)
-            ->where('status', FormationEnrollment::STATUS_ACTIVE)
+            ->whereIn('status', [FormationEnrollment::STATUS_ACTIVE, FormationEnrollment::STATUS_COMPLETED])
             ->first();
 
-        if (!$enrollment) {
+        if (! $enrollment) {
             return redirect()->route('formation.show', $formation->slug)
                 ->with('error', 'Accès réservé aux apprenants inscrits.');
         }
 
-        // Récupérer ou créer la progression
         $progress = FormationProgress::firstOrCreate(
             [
                 'user_id' => $user->id,
@@ -184,20 +164,12 @@ class MyLearningController extends Controller
             ]
         );
 
-        // Leçons précédente/suivante pour navigation
         $currentModule = $lesson->module;
-        $allLessons = FormationLesson::whereHas('module', function ($q) use ($formation) {
-            $q->where('formation_id', $formation->id)
-              ->where('is_published', true);
-        })
-        ->where('is_published', true)
-        ->orderByRaw('(SELECT `order` FROM formation_modules WHERE formation_modules.id = formation_lessons.module_id)')
-        ->orderBy('order')
-        ->get();
+        [$prevLesson, $nextLesson] = $this->adjacentLessons($formation, $lesson);
 
-        $currentIndex = $allLessons->search(fn($l) => $l->id === $lesson->id);
-        $prevLesson = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
-        $nextLesson = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1] : null;
+        $formation->load([
+            'publishedModules.publishedLessons' => fn ($q) => $q->with(['progresses' => fn ($pq) => $pq->where('user_id', $user->id)]),
+        ]);
 
         return view('membres.lesson-show', compact(
             'formation',
@@ -217,18 +189,16 @@ class MyLearningController extends Controller
     {
         $user = auth()->user();
 
-        // Vérifier l'inscription
         $enrollment = FormationEnrollment::where('user_id', $user->id)
             ->where('formation_id', $formation->id)
-            ->where('status', FormationEnrollment::STATUS_ACTIVE)
+            ->whereIn('status', [FormationEnrollment::STATUS_ACTIVE, FormationEnrollment::STATUS_COMPLETED])
             ->first();
 
-        if (!$enrollment) {
+        if (! $enrollment) {
             return response()->json(['error' => 'Non autorisé'], 403);
         }
 
-        // Mettre à jour la progression
-        $progress = FormationProgress::updateOrCreate(
+        FormationProgress::updateOrCreate(
             [
                 'user_id' => $user->id,
                 'lesson_id' => $lesson->id,
@@ -239,26 +209,29 @@ class MyLearningController extends Controller
             ]
         );
 
-        // Calculer la nouvelle progression
-        $totalLessons = $formation->total_lessons_count;
-        $completedLessons = FormationProgress::where('user_id', $user->id)
-            ->whereHas('lesson.module', function ($q) use ($formation) {
-                $q->where('formation_id', $formation->id);
-            })
-            ->whereNotNull('completed_at')
-            ->count();
+        $progress = $this->completionService->progressFor($user, $formation);
+        $certificate = $this->completionService->tryFinalize($user, $formation);
+        [, $nextLesson] = $this->adjacentLessons($formation, $lesson);
 
-        $percent = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
-
-        // Compléter la formation si 100%
-        if ($percent === 100 && !$enrollment->isCompleted()) {
-            $enrollment->complete();
+        $redirectUrl = null;
+        if ($certificate) {
+            $redirectUrl = route('learning.certificate.download', $formation->slug);
+        } elseif ($nextLesson) {
+            $redirectUrl = route($nextLesson->learningRouteName(), [$formation->slug, $nextLesson]);
+        } elseif ($progress['percent'] === 100) {
+            $redirectUrl = route('learning.show', $formation->slug);
         }
 
         return response()->json([
             'success' => true,
-            'progress_percent' => $percent,
-            'completed' => $percent === 100,
+            'progress_percent' => $progress['percent'],
+            'completed' => $progress['percent'] === 100,
+            'certificate_issued' => $certificate !== null,
+            'certificate_url' => $certificate
+                ? route('learning.certificate.download', $formation->slug)
+                : null,
+            'redirect_url' => $redirectUrl,
+            'next_lesson_title' => $nextLesson?->title,
         ]);
     }
 
@@ -285,6 +258,35 @@ class MyLearningController extends Controller
 
             return (int) floor($totalSeconds / 3600);
         });
+    }
+
+    /** @return \Illuminate\Support\Collection<int, FormationLesson> */
+    private function orderedLessonsFor(Formation $formation)
+    {
+        return FormationLesson::query()
+            ->where('formation_lessons.is_published', true)
+            ->whereHas('module', fn ($q) => $q->where('formation_id', $formation->id)->where('is_published', true))
+            ->join('formation_modules', 'formation_modules.id', '=', 'formation_lessons.module_id')
+            ->orderBy('formation_modules.order')
+            ->orderBy('formation_lessons.order')
+            ->select('formation_lessons.*')
+            ->get();
+    }
+
+    /** @return array{0: ?FormationLesson, 1: ?FormationLesson} */
+    private function adjacentLessons(Formation $formation, FormationLesson $lesson): array
+    {
+        $allLessons = $this->orderedLessonsFor($formation);
+        $currentIndex = $allLessons->search(fn ($l) => $l->id === $lesson->id);
+
+        if ($currentIndex === false) {
+            return [null, null];
+        }
+
+        $prevLesson = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
+        $nextLesson = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1] : null;
+
+        return [$prevLesson, $nextLesson];
     }
 
     /**
@@ -446,6 +448,10 @@ class MyLearningController extends Controller
         $answers = $request->input('answers', []);
         $attempt->complete($answers);
 
+        $certificate = $attempt->is_passed
+            ? $this->completionService->tryFinalize($user, $formation)
+            : null;
+
         return response()->json([
             'success' => true,
             'attempt' => [
@@ -454,6 +460,10 @@ class MyLearningController extends Controller
                 'percentage' => $attempt->percentage,
                 'is_passed' => $attempt->is_passed,
             ],
+            'certificate_issued' => $certificate !== null,
+            'certificate_url' => $certificate
+                ? route('learning.certificate.download', $formation->slug)
+                : null,
         ]);
     }
 
@@ -474,11 +484,47 @@ class MyLearningController extends Controller
 
         $quiz->load('questions.answers');
 
+        $certificate = $this->completionService->tryFinalize($user, $formation)
+            ?? FormationEnrollment::where('user_id', $user->id)
+                ->where('formation_id', $formation->id)
+                ->first()
+                ?->certificate;
+
         return view('membres.quiz-results', compact(
             'formation',
             'lesson',
             'quiz',
-            'attempt'
+            'attempt',
+            'certificate'
         ));
+    }
+
+    public function certificate(Formation $formation)
+    {
+        $certificate = $this->findUserCertificate($formation);
+
+        return $this->certificateService->inlineResponse($certificate);
+    }
+
+    public function downloadCertificate(Formation $formation)
+    {
+        $certificate = $this->findUserCertificate($formation);
+
+        return $this->certificateService->downloadResponse($certificate);
+    }
+
+    private function findUserCertificate(Formation $formation)
+    {
+        $user = auth()->user();
+
+        $certificate = FormationCertificate::where('user_id', $user->id)
+            ->where('formation_id', $formation->id)
+            ->first();
+
+        if (! $certificate) {
+            abort(404, 'Certificat non disponible. Terminez toutes les leçons de la formation.');
+        }
+
+        return $certificate;
     }
 }

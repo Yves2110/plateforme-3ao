@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Formation extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
     protected $fillable = [
         'title', 'slug', 'type', 'organizer', 'country', 'location',
@@ -54,6 +55,11 @@ class Formation extends Model
         return $this->enrollments()->where('status', FormationEnrollment::STATUS_COMPLETED);
     }
 
+    public function certificates()
+    {
+        return $this->hasMany(FormationCertificate::class);
+    }
+
     public function scopeValidated($query)
     {
         return $query->where('is_validated', true);
@@ -92,5 +98,20 @@ class Formation extends Model
             return $hours . 'h';
         }
         return $hours . 'h ' . $remainingMinutes . 'min';
+    }
+
+    public function hasLmsContent(): bool
+    {
+        return $this->modules()
+            ->where('is_published', true)
+            ->whereHas('lessons', fn ($q) => $q->where('is_published', true))
+            ->exists();
+    }
+
+    public function pendingEnrollmentsCount(): int
+    {
+        return $this->enrollments()
+            ->where('status', FormationEnrollment::STATUS_PENDING)
+            ->count();
     }
 }

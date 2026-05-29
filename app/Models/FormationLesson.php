@@ -33,14 +33,24 @@ class FormationLesson extends Model
         return $this->belongsTo(FormationModule::class, 'module_id');
     }
 
-    public function formation()
+    public function getFormationModelAttribute(): ?Formation
     {
-        return $this->module->formation();
+        return $this->module?->formation;
     }
 
     public function progresses()
     {
         return $this->hasMany(FormationProgress::class, 'lesson_id');
+    }
+
+    public function quizzes()
+    {
+        return $this->hasMany(FormationQuiz::class, 'lesson_id');
+    }
+
+    public function publishedQuiz()
+    {
+        return $this->hasOne(FormationQuiz::class, 'lesson_id')->where('is_published', true);
     }
 
     public function scopePublished($query)
@@ -78,8 +88,18 @@ class FormationLesson extends Model
         return $this->file_path ? asset('storage/' . $this->file_path) : null;
     }
 
-    public function getCompletedByUserAttribute(int $userId): bool
+    public function isCompletedByUser(int $userId): bool
     {
         return $this->progresses()->where('user_id', $userId)->whereNotNull('completed_at')->exists();
+    }
+
+    public function hasQuiz(): bool
+    {
+        return $this->isQuiz() || $this->quizzes()->where('is_published', true)->exists();
+    }
+
+    public function learningRouteName(): string
+    {
+        return $this->hasQuiz() ? 'learning.quiz' : 'learning.lesson';
     }
 }

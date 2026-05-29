@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">{{ $formation->title }} — Mon apprentissage</x-slot>
+    <x-slot name="title">{{ $formation->title }}   Mon apprentissage</x-slot>
     <x-slot name="description">{{ Str::limit(strip_tags($formation->description), 150) }}</x-slot>
 
     {{-- Header avec progression --}}
@@ -16,8 +16,8 @@
                 @if($formation->thumbnail)
                     <img src="{{ asset('storage/'.$formation->thumbnail) }}" class="w-full md:w-64 h-48 rounded-2xl object-cover" alt="">
                 @else
-                    <div class="w-full md:w-64 h-48 rounded-2xl bg-white/10 flex items-center justify-center text-6xl">
-                        🎓
+                    <div class="w-full md:w-64 h-48 rounded-2xl overflow-hidden border border-white/20">
+                        <x-formation-cover-placeholder class="w-full h-full" size="lg" />
                     </div>
                 @endif
                 <div class="flex-1">
@@ -61,7 +61,7 @@
                                     @php
                                         $isCompleted = $lesson->progresses->where('user_id', auth()->id())->whereNotNull('completed_at')->isNotEmpty();
                                     @endphp
-                                    <a href="{{ route('learning.lesson', [$formation->slug, $lesson]) }}"
+                                    <a href="{{ route($lesson->learningRouteName(), [$formation->slug, $lesson]) }}"
                                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors {{ request()->is('mon-apprentissage/formations/'.$formation->slug.'/lecons/'.$lesson->id) ? 'bg-[#2D6A4F] text-white' : 'text-gray-600 hover:bg-gray-50' }}">
                                         @if($isCompleted)
                                             <svg class="w-4 h-4 text-green-500 {{ request()->is('mon-apprentissage/formations/'.$formation->slug.'/lecons/'.$lesson->id) ? 'text-white' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -150,6 +150,31 @@
                         @endif
                     </div>
 
+                    @if($certificate)
+                        <div class="bg-gradient-to-br from-[#F8F5F0] to-[#d4e8dc] border-2 border-[#F4C842] rounded-2xl p-6 mb-6 text-center">
+                            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-[#2D6A4F] text-white flex items-center justify-center">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                            </div>
+                            <h3 class="text-xl font-display font-bold text-[#2D6A4F] mb-1">Formation terminée</h3>
+                            <p class="text-sm text-gray-600 mb-1">Votre certificat a été délivré automatiquement.</p>
+                            <p class="text-xs text-gray-500 mb-4">N° {{ $certificate->certificate_number }} · {{ $certificate->issued_at->format('d/m/Y') }}</p>
+                            <div class="flex flex-wrap justify-center gap-3">
+                                <a href="{{ route('learning.certificate', $formation->slug) }}" target="_blank"
+                                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#2D6A4F] text-[#2D6A4F] text-sm font-semibold rounded-xl hover:bg-[#F8F5F0]">
+                                    Voir le certificat
+                                </a>
+                                <a href="{{ route('learning.certificate.download', $formation->slug) }}"
+                                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2D6A4F] text-white text-sm font-semibold rounded-xl hover:bg-[#40916C]">
+                                    Télécharger le PDF
+                                </a>
+                            </div>
+                        </div>
+                    @elseif($progressPercent === 100)
+                        <div class="bg-green-50 rounded-xl p-4 mb-6 text-sm text-green-800">
+                            Parcours complété — votre certificat est en cours de génération. Rechargez cette page dans quelques instants.
+                        </div>
+                    @endif
+
                     @if($formation->price)
                         <div class="bg-amber-50 rounded-xl p-4 mb-6">
                             <p class="text-amber-800">
@@ -159,14 +184,14 @@
                     @else
                         <div class="bg-green-50 rounded-xl p-4 mb-6">
                             <p class="text-green-800">
-                                <span class="font-semibold">Gratuit</span> — Cette formation est accessible sans frais.
+                                <span class="font-semibold">Gratuit</span>   Cette formation est accessible sans frais.
                             </p>
                         </div>
                     @endif
 
-                    @if($modules->isNotEmpty() && $modules->first()->publishedLessons->isNotEmpty())
+                    @if(! $certificate && $modules->isNotEmpty() && $modules->first()->publishedLessons->isNotEmpty())
                         @php $firstLesson = $modules->first()->publishedLessons->first(); @endphp
-                        <a href="{{ route('learning.lesson', [$formation->slug, $firstLesson]) }}"
+                        <a href="{{ route($firstLesson->learningRouteName(), [$formation->slug, $firstLesson]) }}"
                            class="inline-flex items-center gap-2 px-6 py-3 bg-[#2D6A4F] text-white font-medium rounded-xl hover:bg-[#40916C] transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             {{ $progressPercent > 0 ? 'Continuer la formation' : 'Commencer la formation' }}

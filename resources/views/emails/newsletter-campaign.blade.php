@@ -117,7 +117,7 @@
                 <tr>
                     <td>
                         <p style="margin:0 0 8px;font-size:12px;line-height:1.5;color:rgba(255,255,255,0.85);">
-                            <strong style="color:#fff;">3AO</strong> — Alliance pour l'Agroécologie en Afrique de l'Ouest
+                            <strong style="color:#fff;">3AO</strong>   Alliance pour l'Agroécologie en Afrique de l'Ouest
                         </p>
                         <p style="margin:0;font-size:11px;line-height:1.5;color:rgba(255,255,255,0.55);">
                             Vous recevez cet e-mail car vous êtes inscrit(e) à notre newsletter.

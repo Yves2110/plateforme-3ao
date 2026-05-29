@@ -28,6 +28,8 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             'name' => ['required', 'string', 'min:2', 'max:50'],
             'email' => ['required', 'string', 'email:rfc,dns', 'max:100', 'unique:users', new NotDisposableEmail],
+            'organization' => ['required', 'string', 'min:2', 'max:255'],
+            'registration_reason' => ['required', 'string', 'min:20', 'max:2000'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'website' => ['prohibited'],
@@ -45,6 +47,8 @@ class CreateNewUser implements CreatesNewUsers
             return tap(User::create([
                 'name' => $input['name'],
                 'email' => $input['email'],
+                'organization' => $input['organization'],
+                'registration_reason' => $input['registration_reason'],
                 'password' => Hash::make($input['password']),
             ]), function (User $user) {
                 $user->forceFill(['approval_status' => 'pending'])->save();

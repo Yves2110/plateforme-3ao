@@ -60,4 +60,30 @@ class RegistrationValidationTest extends TestCase
         $this->actingAs($validator)->get('/admin/utilisateurs-en-attente')->assertOk();
         $this->actingAs($validator)->get('/admin')->assertForbidden();
     }
+
+    public function test_approval_keeps_password_chosen_at_registration(): void
+    {
+        Mail::fake();
+
+        $plainPassword = 'SecurePass123!@#';
+        $pendingUser = User::factory()->withPersonalTeam()->create([
+            'approval_status' => 'pending',
+            'password' => $plainPassword,
+        ]);
+
+        $admin = User::factory()->withPersonalTeam()->create([
+            'approval_status' => 'approved',
+            'email_verified_at' => now(),
+        ]);
+        $admin->assignRole('super_admin');
+
+        $this->actingAs($admin)
+            ->post(route('admin.users.approve', $pendingUser))
+            ->assertRedirect();
+
+        $pendingUser->refresh();
+
+        $this->assertSame('approved', $pendingUser->approval_status);
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check($plainPassword, $pendingUser->password));
+    }
 }

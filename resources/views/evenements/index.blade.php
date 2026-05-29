@@ -69,7 +69,6 @@
                             <x-event-schedule-badge :event="$event" />
                             <span class="badge badge-evenement">{{ $event->type }}</span>
                         </div>
-                        {{-- En ligne badge --}}
                         @if($event->is_online)
                             <span class="absolute bottom-3 left-3 inline-flex items-center gap-1 px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full">
                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/></svg>
@@ -92,7 +91,7 @@
                                 <span>
                                     {{ $event->start_date->translatedFormat('d M Y') }}
                                     @if($event->end_date && $event->end_date->ne($event->start_date))
-                                        — {{ $event->end_date->translatedFormat('d M Y') }}
+                                          {{ $event->end_date->translatedFormat('d M Y') }}
                                     @endif
                                 </span>
                             </div>

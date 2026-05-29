@@ -7,9 +7,7 @@ use App\Mail\UserApprovedMail;
 use App\Models\User;
 use App\Services\SecurityLogger;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -17,10 +15,21 @@ class AdminUserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('roles')
-            ->when($request->search, fn($q) => $q->where('name', 'like', "%{$request->search}%")->orWhere('email', 'like', "%{$request->search}%"))
+        $actor = $request->user();
+
+        $users = User::query()
+            ->visibleToAdmin($actor)
+            ->with('roles')
+            ->when($request->search, function ($q) use ($request) {
+                $s = $request->search;
+                $q->where(function ($q) use ($s) {
+                    $q->where('name', 'like', "%{$s}%")
+                        ->orWhere('email', 'like', "%{$s}%")
+                        ->orWhere('organization', 'like', "%{$s}%");
+                });
+            })
             ->latest()
-            ->paginate(20)
+            ->paginate(10)
             ->withQueryString();
 
         $roles = Role::orderBy('name')->get();
@@ -30,20 +39,40 @@ class AdminUserController extends Controller
 
     public function edit(User $user)
     {
+        $this->ensureAdminCanAccessUser($user);
+
         $roles       = Role::orderBy('name')->get();
         $permissions = Permission::orderBy('name')->get();
+
         return view('admin.utilisateurs.edit', compact('user', 'roles', 'permissions'));
     }
 
     public function update(Request $request, User $user)
     {
+        $this->ensureAdminCanAccessUser($user);
+        $actor = $request->user();
+
         $data = $request->validate([
             'name'         => 'required|string|max:255',
-            'email'        => 'required|email|unique:users,email,' . $user->id,
+            'email'        => 'required|email|unique:users,email,'.$user->id,
             'role'         => 'required|exists:roles,name',
             'organization' => 'nullable|string|max:255',
             'country'      => 'nullable|string|max:100',
         ]);
+
+        abort_if(
+            $data['role'] === 'super_admin' && ! $actor->isPlatformOwner(),
+            403,
+            'Seul le propriétaire de la plateforme peut attribuer le rôle super_admin.'
+        );
+
+        if ($user->hasRole('super_admin') && ! $actor->isPlatformOwner()) {
+            $data['role'] = 'super_admin';
+        }
+
+        if ($user->isPlatformOwner()) {
+            $data['role'] = 'super_admin';
+        }
 
         $user->update([
             'name'         => $data['name'],
@@ -68,46 +97,65 @@ class AdminUserController extends Controller
 
     public function destroy(User $user)
     {
-        abort_if($user->id === auth()->id(), 403, 'Impossible de supprimer votre propre compte.');
+        $this->ensureAdminCanAccessUser($user);
+        abort_unless($user->canAdminDelete(auth()->user()), 403, 'Action non autorisée sur ce compte.');
+
         SecurityLogger::admin('user.deleted', ['target_user_id' => $user->id]);
         $user->delete();
+
         return back()->with('success', 'Utilisateur supprimé.');
+    }
+
+    public function toggleActive(User $user)
+    {
+        $this->ensureAdminCanAccessUser($user);
+        abort_unless($user->canAdminToggle(auth()->user()), 403, 'Action non autorisée sur ce compte.');
+
+        $user->update(['is_active' => ! $user->is_active]);
+
+        SecurityLogger::admin('user.toggled_active', [
+            'target_user_id' => $user->id,
+            'is_active' => $user->is_active,
+        ]);
+
+        $message = $user->is_active
+            ? "Le compte {$user->name} a été réactivé."
+            : "Le compte {$user->name} a été désactivé.";
+
+        return back()->with('success', $message);
     }
 
     public function pending()
     {
-        $pendingUsers = User::where('approval_status', 'pending')
-            ->whereDoesntHave('roles', function($q) {
+        $pendingUsers = User::query()
+            ->visibleToAdmin(auth()->user())
+            ->where('approval_status', 'pending')
+            ->whereDoesntHave('roles', function ($q) {
                 $q->where('name', 'super_admin');
             })
             ->latest()
-            ->paginate(20);
+            ->paginate(10);
 
         return view('admin.utilisateurs.pending', compact('pendingUsers'));
     }
 
     public function approve(Request $request, User $user)
     {
+        $this->ensureAdminCanAccessUser($user);
         abort_if($user->approval_status !== 'pending', 400, 'Cet utilisateur n\'est pas en attente de validation.');
-
-        // Générer un mot de passe aléatoire
-        $password = Str::random(12);
 
         $user->forceFill([
             'approval_status' => 'approved',
             'approved_at' => now(),
             'approved_by' => auth()->id(),
             'email_verified_at' => now(),
-            'password' => Hash::make($password),
         ])->save();
 
-        // Attribuer le rôle contributeur par défaut
         $user->assignRole('contributeur');
 
-        // Envoyer l'email avec les credentials (et ne pas afficher un faux succès si échec SMTP)
         $mailSent = true;
         try {
-            Mail::to($user->email)->send(new UserApprovedMail($user, $password));
+            Mail::to($user->email)->send(new UserApprovedMail($user));
         } catch (\Throwable $e) {
             $mailSent = false;
             SecurityLogger::admin('user.approve_mail_failed', [
@@ -127,6 +175,8 @@ class AdminUserController extends Controller
 
     public function reject(Request $request, User $user)
     {
+        $this->ensureAdminCanAccessUser($user);
+
         $request->validate([
             'reason' => 'required|string|max:500',
         ]);
@@ -141,5 +191,10 @@ class AdminUserController extends Controller
         SecurityLogger::admin('user.rejected', ['target_user_id' => $user->id]);
 
         return back()->with('info', "L'inscription de {$user->name} a été refusée.");
+    }
+
+    private function ensureAdminCanAccessUser(User $user): void
+    {
+        abort_unless($user->visibleToAdmin(auth()->user()), 404);
     }
 }

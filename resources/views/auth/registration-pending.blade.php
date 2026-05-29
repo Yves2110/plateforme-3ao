@@ -8,7 +8,7 @@
             <h2 class="text-lg font-semibold text-gray-800 mb-2">Inscription en attente</h2>
             <p class="text-sm text-gray-600 leading-relaxed">
                 Votre demande d'accès a bien été enregistrée. Un administrateur doit valider votre compte avant que vous puissiez utiliser la plateforme.
-                Vous recevrez un e-mail avec vos identifiants dès que votre inscription sera approuvée.
+                Vous recevrez un e-mail de confirmation dès que votre inscription sera approuvée. Vous pourrez alors vous connecter avec l'adresse e-mail et le mot de passe que vous venez de définir.
             </p>
         </div>
 

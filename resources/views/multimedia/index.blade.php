@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Galerie Multimédia — 3AO</x-slot>
+    <x-slot name="title">Galerie Multimédia 3AO</x-slot>
 
     {{-- Header --}}
     <div class="bg-gradient-to-r from-[#2D6A4F] to-[#40916C] py-12">
@@ -51,6 +51,8 @@
             :list-route="route('admin.medias.index')"
         />
 
+        <x-media-gallery-slider :slides="$gallerySlides ?? []" />
+
         @if($media->isEmpty())
             <div class="py-20 text-center text-gray-400">
                 <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,17 +77,14 @@
                     <a href="{{ route('multimedia.show', $item->slug) }}"
                        class="group card overflow-hidden block">
 
-                        {{-- Thumbnail --}}
-                        <div class="relative overflow-hidden
-                                    {{ $item->type === 'podcast' ? 'h-32' : 'h-48' }}
-                                    bg-gradient-to-br from-[#2D6A4F] to-[#1A1A2E]">
-
-                            @if($item->thumbnail)
-                                <img src="{{ asset('storage/'.$item->thumbnail) }}" alt="{{ $item->title }}"
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            @endif
-
-                            {{-- Overlay type --}}
+                        @php $mediaMode = $item->cardDisplayMode(); @endphp
+                        <x-cover-visual
+                            :src="$item->coverImageUrl()"
+                            :alt="$item->title"
+                            :mode="$mediaMode"
+                            :height-class="$item->type === 'podcast' ? 'h-32' : 'h-48'"
+                            class="group"
+                        >
                             @if($item->type === 'video')
                                 <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
                                     <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
@@ -97,12 +96,6 @@
                                 @if($item->duration)
                                     <span class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 text-white text-xs rounded font-mono">{{ $item->duration }}</span>
                                 @endif
-                            @elseif($item->type === 'podcast')
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <svg class="w-12 h-12 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
-                                    </svg>
-                                </div>
                             @elseif($item->type === 'gallery')
                                 <div class="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-black/60 text-white text-xs rounded-full">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
@@ -117,7 +110,7 @@
                                            ($item->type === 'gallery' ? 'bg-blue-600 text-white' : 'bg-[#2D6A4F] text-white')) }}">
                                 {{ ucfirst($item->type) }}
                             </span>
-                        </div>
+                        </x-cover-visual>
 
                         {{-- Infos --}}
                         <div class="p-4">

@@ -98,5 +98,29 @@ class UploadService
         if (! in_array($ext, $allowedExtensions, true)) {
             throw new InvalidArgumentException('Extension non autorisée pour cet upload.');
         }
+
+        $this->assertMimeMatchesExtension($file, $ext);
+    }
+
+    protected function assertMimeMatchesExtension(UploadedFile $file, string $ext): void
+    {
+        $path = $file->getRealPath();
+        if (! $path) {
+            throw new InvalidArgumentException('Fichier invalide.');
+        }
+
+        $mime = mime_content_type($path) ?: '';
+        $map = [
+            'jpg' => ['image/jpeg'], 'jpeg' => ['image/jpeg'], 'png' => ['image/png'],
+            'webp' => ['image/webp'], 'gif' => ['image/gif'], 'pdf' => ['application/pdf'],
+            'mp3' => ['audio/mpeg', 'audio/mp3'], 'm4a' => ['audio/mp4', 'audio/x-m4a'],
+            'ogg' => ['audio/ogg'], 'wav' => ['audio/wav', 'audio/x-wav'],
+            'mp4' => ['video/mp4'], 'webm' => ['video/webm'],
+        ];
+
+        $allowedMimes = $map[$ext] ?? [];
+        if ($allowedMimes !== [] && ! in_array($mime, $allowedMimes, true)) {
+            throw new InvalidArgumentException('Le type MIME du fichier ne correspond pas à l\'extension.');
+        }
     }
 }

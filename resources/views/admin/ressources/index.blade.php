@@ -40,7 +40,7 @@
                             <span class="px-2 py-0.5 text-xs font-semibold bg-purple-100 text-purple-700 rounded-full uppercase">{{ $r->type }}</span>
                         </td>
                         <td class="px-5 py-3 text-gray-600 uppercase text-xs">{{ $r->language }}</td>
-                        <td class="px-5 py-3 text-gray-600 text-xs max-w-[8rem] truncate">{{ $r->tags->first()?->name ?? '—' }}</td>
+                        <td class="px-5 py-3 text-gray-600 text-xs max-w-[8rem] truncate">{{ $r->tags->first()?->name ?? ' ' }}</td>
                         <td class="px-5 py-3">
                             <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $r->is_validated ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700' }}">
                                 {{ $r->is_validated ? 'Validé' : 'En attente' }}

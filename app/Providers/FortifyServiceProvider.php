@@ -57,6 +57,12 @@ class FortifyServiceProvider extends ServiceProvider
                 ]);
             }
 
+            if (($user->is_active ?? true) === false && ! $user->hasRole(['super_admin', 'moderateur'])) {
+                throw ValidationException::withMessages([
+                    'email' => ['Votre compte a été désactivé. Contactez le secrétariat 3AO.'],
+                ]);
+            }
+
             return $user;
         });
 

@@ -444,6 +444,8 @@ class FullDemoSeeder extends Seeder
             }
         }
 
+        $this->call(FormationCatalogSeeder::class);
+
         $this->command->info('✅ FullDemoSeeder : toutes les données factices insérées !');
         $this->command->info('👤 Admin    : admin@3ao.org / Admin3AO@2026!');
         $this->command->info('👤 Membres  : aminata@demo.org / Demo@2026! (et autres)');

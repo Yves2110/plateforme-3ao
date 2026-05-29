@@ -68,7 +68,7 @@
     <div>
         <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
             Position sur la carte
-            <span class="text-gray-400 font-normal normal-case ml-2">— Glisser le marqueur ou cliquer sur la carte pour ajuster</span>
+            <span class="text-gray-400 font-normal normal-case ml-2">  Glisser le marqueur ou cliquer sur la carte pour ajuster</span>
         </label>
         <div id="{{ $id }}" style="height: {{ $mapHeight }}; border-radius: 0.75rem; z-index: 1;"
              class="border border-gray-200 shadow-sm"></div>

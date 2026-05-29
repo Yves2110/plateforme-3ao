@@ -23,6 +23,20 @@
             </div>
 
             <div class="mt-4">
+                <x-label for="organization" value="Organisation" />
+                <x-input id="organization" class="block mt-1 w-full" type="text" name="organization" :value="old('organization')" required autocomplete="organization" />
+                <p class="mt-1 text-xs text-gray-500">Structure, association ou institution que vous représentez.</p>
+            </div>
+
+            <div class="mt-4">
+                <x-label for="registration_reason" value="Motif de la demande" />
+                <textarea id="registration_reason" name="registration_reason" rows="4" required
+                          class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                          placeholder="Décrivez brièvement pourquoi vous souhaitez rejoindre la plateforme 3AO…">{{ old('registration_reason') }}</textarea>
+                <p class="mt-1 text-xs text-gray-500">Minimum 20 caractères. Exemple : je souhaite partager des ressources agroécologiques avec mon réseau au Burkina Faso.</p>
+            </div>
+
+            <div class="mt-4">
                 <x-label for="password" value="Mot de passe" />
                 <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
                 <p class="mt-1 text-xs text-gray-500">Minimum 10 caractères avec majuscule, minuscule, chiffre et symbole. Exemple : Rahim@2026!</p>

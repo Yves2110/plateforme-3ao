@@ -5,7 +5,7 @@
         steps: [
             {
                 title: 'Bienvenue sur la Plateforme 3AO ! 🌱',
-                text: 'Cette plateforme collaborative rassemble les acteurs de l\'agroécologie en Afrique de l\'Ouest. Faisons un rapide tour ensemble — cela ne prend que 30 secondes !',
+                text: 'Cette plateforme collaborative rassemble les acteurs de l\'agroécologie en Afrique de l\'Ouest. Faisons un rapide tour ensemble   cela ne prend que 30 secondes !',
                 target: null,
                 position: 'center'
             },
@@ -40,8 +40,8 @@
                 position: 'bottom'
             },
             {
-                title: '🎓 Le Hub Formation',
-                text: 'Trouvez des formations agroécologiques adaptées à votre profil — ateliers terrain, cours en ligne, certifications reconnues régionalement.',
+                title: 'Le Hub Formation',
+                text: 'Consultez les formations agroécologiques (ateliers, cours en ligne, webinaires, certifications). Inscrivez-vous sur la plateforme pour accéder aux parcours LMS avec modules, leçons et quiz, puis suivez votre progression dans « Mon apprentissage ».',
                 target: 'nav-formation',
                 position: 'bottom'
             },

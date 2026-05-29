@@ -35,6 +35,8 @@ class AdminMediaController extends Controller
         $data['slug']         = Str::slug($data['title']).'-'.Str::random(5);
         $data['user_id']      = auth()->id();
         $data['is_published'] = $request->boolean('is_published');
+        $data['featured_in_gallery'] = $request->boolean('featured_in_gallery');
+        $data['gallery_sort_order'] = (int) $request->input('gallery_sort_order', 0);
         $data['published_at'] = $data['is_published'] ? now() : null;
 
         $data = $this->handleMainFile($request, $data, null, $uploader);
@@ -65,6 +67,8 @@ class AdminMediaController extends Controller
         $data = $this->validatedMedia($request, $media);
 
         $data['is_published'] = $request->boolean('is_published');
+        $data['featured_in_gallery'] = $request->boolean('featured_in_gallery');
+        $data['gallery_sort_order'] = (int) $request->input('gallery_sort_order', 0);
         if ($data['is_published'] && ! $media->published_at) {
             $data['published_at'] = now();
         }
@@ -125,6 +129,8 @@ class AdminMediaController extends Controller
             'source'       => 'nullable|string|max:255',
             'thumbnail'    => 'nullable|image|max:4096',
             'is_published' => 'boolean',
+            'featured_in_gallery' => 'boolean',
+            'gallery_sort_order' => 'nullable|integer|min:0|max:999',
             'remove_gallery_photos'   => 'nullable|array',
             'remove_gallery_photos.*' => [
                 'integer',
