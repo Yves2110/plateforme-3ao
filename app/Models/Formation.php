@@ -10,6 +10,8 @@ class Formation extends Model
 {
     use HasFactory, HasUuid;
 
+    private ?bool $cachedHasLmsContent = null;
+
     protected $fillable = [
         'title', 'slug', 'type', 'organizer', 'country', 'location',
         'is_online', 'start_date', 'end_date', 'duration', 'description',
@@ -102,7 +104,11 @@ class Formation extends Model
 
     public function hasLmsContent(): bool
     {
-        return $this->modules()
+        if ($this->cachedHasLmsContent !== null) {
+            return $this->cachedHasLmsContent;
+        }
+
+        return $this->cachedHasLmsContent = $this->modules()
             ->where('is_published', true)
             ->whereHas('lessons', fn ($q) => $q->where('is_published', true))
             ->exists();

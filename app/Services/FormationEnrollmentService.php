@@ -16,6 +16,8 @@ class FormationEnrollmentService
      */
     public function enroll(User $user, Formation $formation): array
     {
+        $hasLmsContent = $formation->hasLmsContent();
+
         $existing = FormationEnrollment::where('user_id', $user->id)
             ->where('formation_id', $formation->id)
             ->first();
@@ -38,7 +40,7 @@ class FormationEnrollmentService
 
         if ($formation->price > 0) {
             $message = 'Inscription enregistrée. Paiement ou validation requis pour accéder au contenu.';
-        } elseif ($formation->hasLmsContent()) {
+        } elseif ($hasLmsContent) {
             $message = 'Inscription confirmée ! Bienvenue dans le parcours.';
         } elseif ($formation->registration_url) {
             $message = 'Inscription confirmée. Vous allez accéder au lien de la session.';
@@ -60,13 +62,15 @@ class FormationEnrollmentService
         string $message,
         string $flashKey = 'success',
     ): RedirectResponse {
+        $hasLmsContent = $formation->hasLmsContent();
+
         if ($enrollment->isPending()) {
             return redirect()
                 ->route('formation.show', $formation->slug)
                 ->with($flashKey, $message);
         }
 
-        if ($formation->hasLmsContent() && ($enrollment->isActive() || $enrollment->isCompleted())) {
+        if ($hasLmsContent && ($enrollment->isActive() || $enrollment->isCompleted())) {
             return redirect()
                 ->to($this->courseEntryUrl($formation, $user))
                 ->with($flashKey, $message);

@@ -14,6 +14,7 @@ use App\Services\FormationCompletionService;
 use App\Services\FormationEnrollmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class MyLearningController extends Controller
 {
@@ -50,6 +51,8 @@ class MyLearningController extends Controller
             ->take(6)
             ->get();
 
+        $this->hydrateProgressPercentages($activeEnrollments, $user->id);
+
         // Stats globales
         $stats = [
             'in_progress' => $activeEnrollments->count(),
@@ -63,6 +66,43 @@ class MyLearningController extends Controller
             'availableFormations',
             'stats'
         ));
+    }
+
+    private function hydrateProgressPercentages($enrollments, int $userId): void
+    {
+        if ($enrollments->isEmpty()) {
+            return;
+        }
+
+        $formationIds = $enrollments->pluck('formation_id')->unique()->values();
+
+        $totals = DB::table('formation_lessons')
+            ->join('formation_modules', 'formation_modules.id', '=', 'formation_lessons.module_id')
+            ->whereIn('formation_modules.formation_id', $formationIds)
+            ->where('formation_modules.is_published', true)
+            ->where('formation_lessons.is_published', true)
+            ->groupBy('formation_modules.formation_id')
+            ->selectRaw('formation_modules.formation_id as formation_id, COUNT(formation_lessons.id) as total')
+            ->pluck('total', 'formation_id');
+
+        $completed = DB::table('formation_progress')
+            ->join('formation_lessons', 'formation_lessons.id', '=', 'formation_progress.lesson_id')
+            ->join('formation_modules', 'formation_modules.id', '=', 'formation_lessons.module_id')
+            ->where('formation_progress.user_id', $userId)
+            ->whereNotNull('formation_progress.completed_at')
+            ->whereIn('formation_modules.formation_id', $formationIds)
+            ->where('formation_modules.is_published', true)
+            ->where('formation_lessons.is_published', true)
+            ->groupBy('formation_modules.formation_id')
+            ->selectRaw('formation_modules.formation_id as formation_id, COUNT(formation_progress.id) as completed')
+            ->pluck('completed', 'formation_id');
+
+        foreach ($enrollments as $enrollment) {
+            $total = (int) ($totals[$enrollment->formation_id] ?? 0);
+            $done = (int) ($completed[$enrollment->formation_id] ?? 0);
+            $percent = $total > 0 ? (int) round(($done / $total) * 100) : 0;
+            $enrollment->setAttribute('progress_percentage', $percent);
+        }
     }
 
     /**

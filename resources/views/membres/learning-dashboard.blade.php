@@ -41,6 +41,7 @@
                 <h2 class="text-xl font-display font-semibold text-[#1A1A2E] mb-4">Formations en cours</h2>
                 <div class="space-y-4">
                     @foreach($activeEnrollments as $enrollment)
+                        @php $progressPercent = (int) $enrollment->progress_percentage; @endphp
                         <div class="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
                             <div class="flex flex-col md:flex-row gap-4">
                                 @if($enrollment->formation->thumbnail)
@@ -72,10 +73,10 @@
                                     <div class="mt-4">
                                         <div class="flex items-center justify-between text-sm mb-2">
                                             <span class="text-gray-600">Progression</span>
-                                            <span class="font-medium text-[#2D6A4F]">{{ $enrollment->progress_percentage }}%</span>
+                                            <span class="font-medium text-[#2D6A4F]">{{ $progressPercent }}%</span>
                                         </div>
                                         <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                            <div class="h-full bg-[#2D6A4F] rounded-full transition-all duration-500" style="width: {{ $enrollment->progress_percentage }}%"></div>
+                                            <div class="h-full bg-[#2D6A4F] rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
                                         </div>
                                     </div>
                                 </div>
