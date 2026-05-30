@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">{{ $quiz->title }}   {{ $formation->title }}</x-slot>
+    <x-slot name="title">{{ $quiz->title }} · {{ $formation->title }}</x-slot>
     <x-slot name="description">Quiz de validation des connaissances</x-slot>
 
     {{-- Header --}}
@@ -10,7 +10,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 </a>
                 <div class="flex-1">
-                    <p class="text-white/50 text-sm">{{ $formation->title }}   {{ $lesson->title }}</p>
+                    <p class="text-white/50 text-sm">{{ $formation->title }} · {{ $lesson->title }}</p>
                     <h1 class="font-display font-semibold">{{ $quiz->title }}</h1>
                 </div>
             </div>

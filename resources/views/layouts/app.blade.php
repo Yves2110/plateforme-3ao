@@ -16,7 +16,7 @@
     <!-- RSS auto-discovery -->
     <link rel="alternate" type="application/rss+xml" title="Actualités 3AO" href="{{ route('rss.actualites') }}">
     <link rel="alternate" type="application/rss+xml" title="Bibliothèque 3AO" href="{{ route('rss.ressources') }}">
-    <link rel="alternate" type="application/rss+xml" title="Événements 3AO"   href="{{ route('rss.evenements') }}">
+    <link rel="alternate" type="application/rss+xml" title="Événements 3AO" href="{{ route('rss.evenements') }}">
 
     <!-- Fonts: Poppins (display) + Inter (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

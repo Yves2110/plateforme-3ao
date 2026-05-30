@@ -42,7 +42,7 @@
             </td>
             <td class="px-3 py-2.5 max-w-[11rem]">
               <span class="font-medium text-[#2D6A4F] truncate block" title="{{ $user->organization }}">
-                {{ $user->organization ?: '—' }}
+                {{ $user->organization ?: 'Non renseignée' }}
               </span>
             </td>
             <td class="px-3 py-2.5 text-gray-600 truncate max-w-[12rem]" title="{{ $user->email }}">{{ $user->email }}</td>
@@ -50,7 +50,7 @@
               @forelse($user->roles as $role)
                 <span class="px-2 py-0.5 text-xs font-semibold bg-[#E8F5E9] text-[#2D6A4F] rounded-full">{{ $role->name }}</span>
               @empty
-                <span class="text-xs text-gray-400">—</span>
+                <span class="text-xs text-gray-400">Aucun</span>
               @endforelse
             </td>
             <td class="px-3 py-2.5">

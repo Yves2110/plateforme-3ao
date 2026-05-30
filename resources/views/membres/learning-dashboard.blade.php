@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Mon apprentissage   Plateforme 3AO</x-slot>
+    <x-slot name="title">Mon apprentissage · Plateforme 3AO</x-slot>
     <x-slot name="description">Suivez vos formations et progressez dans l'agroécologie</x-slot>
 
     {{-- Hero --}}

@@ -3,7 +3,7 @@
 return [
     'logo'               => 'images/logo-3ao.jpeg',
     'newsletter_banner'  => 'images/newsletter-banner.jpg',
-    'logo_alt'           => '3AO — Alliance pour l\'Agroécologie en Afrique de l\'Ouest',
+    'logo_alt'           => '3AO, Alliance pour l\'Agroécologie en Afrique de l\'Ouest',
     'name'               => '3AO',
     'tagline'            => 'Plate-forme collaborative pour la transition agroécologique',
     'colors'             => [

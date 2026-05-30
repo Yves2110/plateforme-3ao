@@ -47,7 +47,7 @@
                 @endif
                 <input type="file" name="image" accept="image/jpeg,image/png,image/webp"
                        class="w-full text-sm text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#F8F5F0] file:text-[#2D6A4F] file:font-semibold">
-                <p class="text-xs text-gray-400 mt-1">Format paysage recommandé (16:9)   JPG ou WebP, max 8 Mo</p>
+                <p class="text-xs text-gray-400 mt-1">Format paysage recommandé (16:9) · JPG ou WebP, max 8 Mo</p>
             </div>
 
             <div class="flex items-center gap-3">

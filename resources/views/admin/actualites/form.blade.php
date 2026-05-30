@@ -31,7 +31,7 @@
                 <select name="category" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788] bg-white">
                     @foreach(\App\Support\ActualiteCategories::all() as $label => $meta)
                         <option value="{{ $label }}" {{ $currentCategory === $label ? 'selected' : '' }}>
-                            {{ $label }}   {{ $meta['description'] }}
+                            {{ $label }} · {{ $meta['description'] }}
                         </option>
                     @endforeach
                 </select>
@@ -53,7 +53,7 @@
                 @endif
                 <input type="file" name="thumbnail" accept="image/*"
                        class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-[#F8F5F0] file:text-[#2D6A4F] file:font-semibold hover:file:bg-green-50">
-                <p class="text-xs text-gray-400 mt-1">JPG, PNG ou WebP   max 4 Mo. Sera converti en WebP automatiquement.</p>
+                <p class="text-xs text-gray-400 mt-1">JPG, PNG ou WebP · max 4 Mo. Sera converti en WebP automatiquement.</p>
             </div>
 
             <div class="flex items-center gap-3">

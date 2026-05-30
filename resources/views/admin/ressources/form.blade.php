@@ -102,7 +102,7 @@
                 @endif
                 <input type="file" name="file_path" accept=".pdf,application/pdf"
                        class="w-full text-sm text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#F8F5F0] file:text-[#2D6A4F] file:font-semibold hover:file:bg-green-50">
-                <p class="text-xs text-gray-400">PDF max 20 Mo   affiché dans la liseuse sur le site.</p>
+                <p class="text-xs text-gray-400">PDF max 20 Mo · affiché dans la liseuse sur le site.</p>
             </div>
 
             {{-- Image de couverture --}}
@@ -113,7 +113,7 @@
                 @endif
                 <input type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp,image/gif"
                        class="w-full text-sm text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#F8F5F0] file:text-[#2D6A4F] file:font-semibold hover:file:bg-green-50">
-                <p class="text-xs text-gray-400">JPG, PNG ou WebP   max 4 Mo. Visible sur les cartes et la fiche ressource.</p>
+                <p class="text-xs text-gray-400">JPG, PNG ou WebP · max 4 Mo. Visible sur les cartes et la fiche ressource.</p>
             </div>
 
             <div class="flex items-center gap-3">

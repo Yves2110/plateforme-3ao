@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Certificat — {{ $certificate->formation_title }}</title>
+    <title>Certificat: {{ $certificate->formation_title }}</title>
     <style>
         @page { margin: 0; size: A4 landscape; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -246,7 +246,7 @@
             </table>
         </div>
 
-        <p class="signature-line">Plateforme collaborative 3AO — Transition agroécologique en Afrique de l'Ouest</p>
+        <p class="signature-line">Plateforme collaborative 3AO: Transition agroécologique en Afrique de l'Ouest</p>
         <p class="tagline">{{ config('brand.tagline') }}</p>
     </div>
 </div>

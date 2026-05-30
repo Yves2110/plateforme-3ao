@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">{{ $lesson->title }}   {{ $formation->title }}</x-slot>
+    <x-slot name="title">{{ $lesson->title }} · {{ $formation->title }}</x-slot>
     <x-slot name="description">{{ Str::limit(strip_tags($lesson->description), 150) }}</x-slot>
 
     {{-- Header compact --}}

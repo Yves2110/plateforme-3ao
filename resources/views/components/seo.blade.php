@@ -23,7 +23,7 @@
 <meta property="og:description" content="{{ $desc }}">
 <meta property="og:image"       content="{{ $ogImage }}">
 <meta property="og:url"         content="{{ $canonicalUrl }}">
-<meta property="og:site_name"   content="{{ $siteName }}">
+<meta property="og:site_name" content="{{ $siteName }}">
 <meta property="og:locale"      content="{{ str_replace('-', '_', app()->getLocale() === 'en' ? 'en_GB' : 'fr_FR') }}">
 
 {{-- Twitter Card --}}

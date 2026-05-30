@@ -82,7 +82,7 @@
                 @endif
                 <input type="file" name="file_path" accept="image/jpeg,image/png,image/webp,image/gif"
                        class="w-full text-sm text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#F8F5F0] file:text-[#2D6A4F] file:font-semibold hover:file:bg-green-50">
-                <p class="text-xs text-gray-400">JPG, PNG, WebP ou GIF   max 50 Mo par image</p>
+                <p class="text-xs text-gray-400">JPG, PNG, WebP ou GIF · max 50 Mo par image</p>
             </div>
 
             {{-- Galerie : plusieurs images --}}
@@ -96,13 +96,13 @@
                     </p>
                     <input type="file" name="gallery_images[]" multiple accept="image/jpeg,image/png,image/webp,image/gif"
                            class="w-full text-sm text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-white file:text-[#2D6A4F] file:font-semibold hover:file:bg-blue-50">
-                    <p class="text-xs text-gray-400 mt-1">Jusqu’à 30 images   max 50 Mo chacune</p>
+                    <p class="text-xs text-gray-400 mt-1">Jusqu’à 30 images · max 50 Mo chacune</p>
                 </div>
 
                 @if($action === 'edit' && $galleryPhotos->count())
                     <div>
                         <p class="text-xs font-semibold text-gray-600 mb-2">
-                            Images actuelles ({{ $galleryPhotos->count() }})   cochez pour retirer
+                            Images actuelles ({{ $galleryPhotos->count() }}) · cochez pour retirer
                         </p>
                         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
                             @foreach($galleryPhotos as $photo)
@@ -147,7 +147,7 @@
                     Si vide, la première image de la galerie sera utilisée automatiquement.
                 </p>
                 <p class="text-xs text-gray-400" x-show="mediaType !== 'gallery'">
-                    Utilisée sur les cartes du hub Multimédia   max 4 Mo
+                    Utilisée sur les cartes du hub Multimédia · max 4 Mo
                 </p>
             </div>
 

@@ -47,11 +47,11 @@
                 <h2 class="font-display font-bold text-xl text-gray-800 mb-4">{{ __('forum.categories_title') }}</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @foreach([
-                        ['slug' => 'pratiques',   'title' => 'Pratiques agroécologiques',   'icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945', 'desc' => 'Techniques de terrain, compostage, agroforesterie…'],
+                        ['slug' => 'pratiques', 'title' => 'Pratiques agroécologiques', 'icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945', 'desc' => 'Techniques de terrain, compostage, agroforesterie…'],
                         ['slug' => 'semences',    'title' => 'Semences & Biodiversité',     'icon' => 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z', 'desc' => 'Conservation, échange et valorisation'],
-                        ['slug' => 'politique',   'title' => 'Politique & Plaidoyer',       'icon' => 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4', 'desc' => 'Cadres politiques et actions collectives'],
+                        ['slug' => 'politique', 'title' => 'Politique & Plaidoyer',       'icon' => 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4', 'desc' => 'Cadres politiques et actions collectives'],
                         ['slug' => 'marches',     'title' => 'Marchés & Filières',          'icon' => 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', 'desc' => 'Circuits courts, prix et commercialisation'],
-                        ['slug' => 'formation',   'title' => 'Formation & Éducation',       'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13', 'desc' => 'Formations et ressources pédagogiques'],
+                        ['slug' => 'formation', 'title' => 'Formation & Éducation',       'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13', 'desc' => 'Formations et ressources pédagogiques'],
                         ['slug' => 'financement', 'title' => 'Financement & Projets',       'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1', 'desc' => 'Appels à projets et opportunités de financement'],
                     ] as $cat)
                         <a href="{{ route('communaute.category', $cat['slug']) }}"

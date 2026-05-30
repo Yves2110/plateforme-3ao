@@ -1,5 +1,5 @@
-<x-app-layout>
-    <x-slot name="title">Résultats   {{ $quiz->title }}</x-slot>
+﻿<x-app-layout>
+    <x-slot name="title">Résultats · {{ $quiz->title }}</x-slot>
     <x-slot name="description">Résultats du quiz de validation</x-slot>
 
     {{-- Header --}}
@@ -10,7 +10,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 </a>
                 <div class="flex-1">
-                    <p class="text-white/50 text-sm">{{ $formation->title }}   {{ $lesson->title }}</p>
+                    <p class="text-white/50 text-sm">{{ $formation->title }} · {{ $lesson->title }}</p>
                     <h1 class="font-display font-semibold">Résultats: {{ $quiz->title }}</h1>
                 </div>
             </div>
@@ -51,7 +51,7 @@
             </div>
 
             <div class="mt-6 text-sm text-gray-500">
-                <p>Tentative #{{ $attempt->attempt_number }}   Complétée le {{ $attempt->completed_at?->format('d/m/Y à H:i') }}</p>
+                <p>Tentative #{{ $attempt->attempt_number }} · Complétée le {{ $attempt->completed_at?->format('d/m/Y à H:i') }}</p>
             </div>
         </div>
 
@@ -143,7 +143,7 @@
 
         @if($certificate)
             <div class="bg-gradient-to-br from-[#F8F5F0] to-[#d4e8dc] border-2 border-[#F4C842] rounded-2xl p-6 mb-6 text-center">
-                <h3 class="text-xl font-display font-bold text-[#2D6A4F] mb-2">Parcours terminé — certificat délivré</h3>
+                <h3 class="text-xl font-display font-bold text-[#2D6A4F] mb-2">Parcours terminé: certificat délivré</h3>
                 <p class="text-sm text-gray-600 mb-4">Félicitations {{ $certificate->learner_name }} ! Votre certificat est disponible.</p>
                 <div class="flex flex-wrap justify-center gap-3">
                     <a href="{{ route('learning.certificate.download', $formation->slug) }}"

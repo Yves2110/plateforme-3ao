@@ -14,14 +14,14 @@
     {{-- Stats cards --}}
     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3">
         @foreach([
-            ['label' => 'Utilisateurs',  'value' => $stats['users'],      'color' => 'bg-blue-500',   'route' => 'admin.utilisateurs.index', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197'],
-            ['label' => 'Actualités',    'value' => $stats['actualites'], 'color' => 'bg-green-500',  'route' => 'admin.actualites.index',   'icon' => 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7'],
-            ['label' => 'Ressources',    'value' => $stats['ressources'], 'color' => 'bg-purple-500', 'route' => 'admin.ressources.index',   'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13'],
-            ['label' => 'Événements',    'value' => $stats['evenements'], 'color' => 'bg-orange-500', 'route' => 'admin.evenements.index',   'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5'],
-            ['label' => 'Acteurs',       'value' => $stats['acteurs'],    'color' => 'bg-teal-500',   'route' => 'admin.acteurs.index',      'icon' => 'M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'],
-            ['label' => 'Médias',        'value' => $stats['medias'],     'color' => 'bg-pink-500',   'route' => 'admin.medias.index',       'icon' => 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764'],
-            ['label' => 'Discussions',   'value' => $stats['threads'],    'color' => 'bg-indigo-500', 'route' => 'admin.forum.index',        'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14'],
-            ['label' => 'Réponses',      'value' => $stats['replies'],    'color' => 'bg-gray-500',   'route' => 'admin.forum.index',        'icon' => 'M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6'],
+            ['label' => 'Utilisateurs',  'value' => $stats['users'],      'color' => 'bg-blue-500', 'route' => 'admin.utilisateurs.index', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197'],
+            ['label' => 'Actualités',    'value' => $stats['actualites'], 'color' => 'bg-green-500',  'route' => 'admin.actualites.index', 'icon' => 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7'],
+            ['label' => 'Ressources',    'value' => $stats['ressources'], 'color' => 'bg-purple-500', 'route' => 'admin.ressources.index', 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13'],
+            ['label' => 'Événements',    'value' => $stats['evenements'], 'color' => 'bg-orange-500', 'route' => 'admin.evenements.index', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5'],
+            ['label' => 'Acteurs',       'value' => $stats['acteurs'],    'color' => 'bg-teal-500', 'route' => 'admin.acteurs.index',      'icon' => 'M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'],
+            ['label' => 'Médias',        'value' => $stats['medias'],     'color' => 'bg-pink-500', 'route' => 'admin.medias.index',       'icon' => 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764'],
+            ['label' => 'Discussions', 'value' => $stats['threads'],    'color' => 'bg-indigo-500', 'route' => 'admin.forum.index',        'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14'],
+            ['label' => 'Réponses',      'value' => $stats['replies'],    'color' => 'bg-gray-500', 'route' => 'admin.forum.index',        'icon' => 'M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6'],
         ] as $stat)
             <a href="{{ route($stat['route']) }}"
                class="flex items-center gap-2.5 sm:gap-3 bg-white rounded-xl border border-gray-100 px-3 py-2.5 sm:px-3.5 sm:py-3 hover:shadow-sm hover:border-gray-200 transition-all group min-w-0">

@@ -5,7 +5,7 @@
         steps: [
             {
                 title: 'Bienvenue sur la Plateforme 3AO ! 🌱',
-                text: 'Cette plateforme collaborative rassemble les acteurs de l\'agroécologie en Afrique de l\'Ouest. Faisons un rapide tour ensemble   cela ne prend que 30 secondes !',
+                text: 'Cette plateforme collaborative rassemble les acteurs de l\'agroécologie en Afrique de l\'Ouest. Faisons un rapide tour ensemble · cela ne prend que 30 secondes !',
                 target: null,
                 position: 'center'
             },

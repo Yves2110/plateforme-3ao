@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">{{ $formation->title }}   Mon apprentissage</x-slot>
+    <x-slot name="title">{{ $formation->title }} · Mon apprentissage</x-slot>
     <x-slot name="description">{{ Str::limit(strip_tags($formation->description), 150) }}</x-slot>
 
     {{-- Header avec progression --}}
@@ -171,7 +171,7 @@
                         </div>
                     @elseif($progressPercent === 100)
                         <div class="bg-green-50 rounded-xl p-4 mb-6 text-sm text-green-800">
-                            Parcours complété — votre certificat est en cours de génération. Rechargez cette page dans quelques instants.
+                            Parcours complété: votre certificat est en cours de génération. Rechargez cette page dans quelques instants.
                         </div>
                     @endif
 
@@ -184,7 +184,7 @@
                     @else
                         <div class="bg-green-50 rounded-xl p-4 mb-6">
                             <p class="text-green-800">
-                                <span class="font-semibold">Gratuit</span>   Cette formation est accessible sans frais.
+                                <span class="font-semibold">Gratuit</span> · Cette formation est accessible sans frais.
                             </p>
                         </div>
                     @endif

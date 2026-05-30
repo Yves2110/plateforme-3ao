@@ -1,4 +1,4 @@
-@extends('admin.layouts.admin')
+﻿@extends('admin.layouts.admin')
 
 @section('title', $formation->id ? 'Modifier la formation' : 'Nouvelle formation')
 @section('page-title', $formation->id ? 'Modifier la formation' : 'Nouvelle formation')
@@ -156,7 +156,7 @@
                     <input type="url" name="registration_url" value="{{ old('registration_url', $formation->registration_url) }}"
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#52B788]"
                            placeholder="https://zoom.us/...">
-                    <p class="text-xs text-gray-500 mt-1">Zoom, visioconférence ou site partenaire — affiché uniquement après inscription sur la plateforme. Le bouton « S'inscrire » inscrit toujours sur 3AO.</p>
+                    <p class="text-xs text-gray-500 mt-1">Zoom, visioconférence ou site partenaire: affiché uniquement après inscription sur la plateforme. Le bouton « S'inscrire » inscrit toujours sur 3AO.</p>
                 </div>
             </div>
         </div>

@@ -21,7 +21,7 @@ class SeoService
     ): static {
         $siteName = config('app.name', 'Plateforme 3AO');
 
-        $this->title        = $title . ' — ' . $siteName;
+        $this->title        = $title . ' · ' . $siteName;
         $this->description  = \Str::limit(strip_tags($description), 155);
         $this->image        = $image  ?? asset(config('brand.logo', 'images/logo-3ao.jpeg'));
         $this->canonicalUrl = $canonicalUrl ?? url()->current();

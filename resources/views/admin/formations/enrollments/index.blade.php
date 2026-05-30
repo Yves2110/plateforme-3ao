@@ -1,6 +1,6 @@
-@extends('admin.layouts.admin')
+﻿@extends('admin.layouts.admin')
 
-@section('title', 'Inscriptions — ' . $formation->title)
+@section('title', 'Inscriptions: ' . $formation->title)
 @section('page-title', 'Inscriptions')
 @section('page-subtitle', $formation->title)
 
@@ -59,7 +59,7 @@
                             <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium {{ $statusBadge }}">{{ $enrollment->statusLabel() }}</span>
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-600">
-                            {{ $enrollment->enrolled_at?->format('d/m/Y H:i') ?? '—' }}
+                            {{ $enrollment->enrolled_at?->format('d/m/Y H:i') ?? '' }}
                         </td>
                         <td class="px-4 py-3 text-right">
                             @if($enrollment->isPending())
