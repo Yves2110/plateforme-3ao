@@ -35,6 +35,7 @@ use App\Http\Controllers\FormationController;
 use App\Http\Controllers\MyLearningController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\PublicManageController;
+use App\Http\Controllers\AboutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,7 @@ Route::get('/robots.txt', function () {
 Route::get('/recherche', [SearchController::class, 'index'])->name('search')->middleware('throttle:search');
 Route::get('/recherche/suggest', [SearchController::class, 'suggest'])->name('search.suggest')->middleware('throttle:search');
 Route::get('/mentions-legales', fn() => view('legal'))->name('mentions-legales');
+Route::get('/a-propos', [AboutController::class, 'index'])->name('about.index');
 
 Route::post('/newsletter/inscription', [NewsletterController::class, 'subscribe'])
     ->name('newsletter.subscribe')

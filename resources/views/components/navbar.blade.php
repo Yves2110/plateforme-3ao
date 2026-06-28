@@ -47,6 +47,10 @@
                    class="nav-link px-3 py-2 rounded-lg hover:bg-[#F8F5F0] {{ request()->routeIs('home') ? 'text-[#2D6A4F] font-semibold bg-[#F8F5F0]' : '' }}">
                     {{ __('nav.home') }}
                 </a>
+                <a id="nav-about" href="{{ route('about.index') }}"
+                   class="nav-link px-3 py-2 rounded-lg hover:bg-[#F8F5F0] {{ request()->routeIs('about.*') ? 'text-[#2D6A4F] font-semibold bg-[#F8F5F0]' : '' }}">
+                    {{ __('nav.about') }}
+                </a>
                 <a id="nav-bibliotheque" href="{{ route('bibliotheque.index') }}"
                    class="nav-link px-3 py-2 rounded-lg hover:bg-[#F8F5F0] {{ request()->routeIs('bibliotheque.*') ? 'text-[#2D6A4F] font-semibold bg-[#F8F5F0]' : '' }}">
                     {{ __('nav.library') }}
@@ -71,24 +75,6 @@
                    class="nav-link px-3 py-2 rounded-lg hover:bg-[#F8F5F0] {{ request()->routeIs('formation.*') ? 'text-[#2D6A4F] font-semibold bg-[#F8F5F0]' : '' }}">
                     <x-icon name="graduation" class="w-4 h-4 inline-block -mt-0.5" /> {{ __('nav.training') }}
                 </a>
-
-                {{-- {{ __('nav.about') }} (dropdown) --}}
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" @keydown.escape="open = false"
-                            class="nav-link px-3 py-2 rounded-lg hover:bg-[#F8F5F0] flex items-center gap-1">
-                        {{ __('nav.about') }}
-                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="open" @click.outside="open = false" x-transition
-                         class="absolute top-full left-0 mt-1 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-[60]">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.mission') }}</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.partners') }}</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.governance') }}</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.contact') }}</a>
-                    </div>
-                </div>
             </div>
 
             {{-- Actions (droite) --}}
@@ -193,13 +179,13 @@
     {{-- Menu mobile --}}
     <div x-show="mobileOpen" x-transition class="lg:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-1">
         <a href="{{ route('home') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.home') }}</a>
+        <a href="{{ route('about.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.about') }}</a>
         <a href="{{ route('bibliotheque.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.library') }}</a>
         <a href="{{ route('communaute.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.community') }}</a>
         <a href="{{ route('multimedia.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.multimedia') }}</a>
         <a href="{{ route('carte.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.map') }}</a>
         <a href="{{ route('evenements.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.events') }}</a>
         <a href="{{ route('formation.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.training') }}</a>
-        <a href="#" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#F8F5F0] hover:text-[#2D6A4F]">{{ __('nav.about') }}</a>
         @php $mobileLocale = app()->getLocale(); @endphp
         <div class="flex items-center gap-2 pt-2">
             <span class="text-xs text-gray-500 px-3">{{ __('nav.language') }}</span>
