@@ -67,65 +67,53 @@
         </div>
     </section>
 
-    {{-- Partenaires --}}
-    <section id="partenaires" class="py-16 lg:py-20 bg-white">
+    {{-- Axes d'action --}}
+    <section id="axes" class="py-16 lg:py-20 bg-[#1A1A2E] text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-12">
-                <h2 class="text-3xl font-bold text-[#1A1A2E] mb-4">{{ __('about.partners_title') }}</h2>
-                <p class="text-gray-600">{{ __('about.partners_subtitle') }}</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach ($partners as $partner)
-                    <div class="bg-[#F8F5F0] rounded-xl p-6 hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 rounded-full bg-[#2D6A4F] text-white flex items-center justify-center font-bold text-sm">
-                                {{ strtoupper(substr($partner['name'], 0, 2)) }}
-                            </div>
-                            <h3 class="font-bold text-[#1A1A2E]">{{ $partner['name'] }}</h3>
-                        </div>
-                        <p class="text-sm text-gray-600">{{ $partner['description'] }}</p>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- Gouvernance --}}
-    <section id="gouvernance" class="py-16 lg:py-20 bg-[#1A1A2E] text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div>
-                    <h2 class="text-3xl font-bold mb-6">{{ __('about.governance_title') }}</h2>
-                    <p class="text-white/80 leading-relaxed mb-6">{{ __('about.governance_text') }}</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
+                {{-- Card à gauche --}}
+                <div class="bg-white/10 rounded-2xl p-8 lg:p-10 flex flex-col justify-center">
+                    <h2 class="text-3xl font-bold mb-4">{{ __('about.brief_title') }}</h2>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        {{ __('about.brief_text') }}
+                    </p>
                     <ul class="space-y-3">
-                        @foreach ($steeringCommittee as $member)
-                            <li class="flex items-start gap-3">
-                                <svg class="w-6 h-6 text-[#52B788] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <span>
-                                    <strong class="text-white">{{ $member['name'] }}</strong>
-                                    <span class="text-white/70"> — {{ $member['role'] }}</span>
-                                </span>
-                            </li>
-                        @endforeach
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-[#52B788] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="text-white/80">{{ __('about.brief_point_1') }}</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-[#52B788] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="text-white/80">{{ __('about.brief_point_2') }}</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-[#52B788] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="text-white/80">{{ __('about.brief_point_3') }}</span>
+                        </li>
                     </ul>
                 </div>
-                <div class="bg-white/5 rounded-2xl p-8">
-                    <h3 class="text-xl font-bold mb-4">{{ __('about.actions_title') }}</h3>
-                    <ul class="space-y-4 text-white/80">
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-[#52B788] text-white flex items-center justify-center text-xs flex-shrink-0">1</span>
-                            {{ __('about.action_1') }}
+
+                {{-- Axes à droite --}}
+                <div class="bg-white/5 rounded-2xl p-8 lg:p-10 flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-6">{{ __('about.actions_title') }}</h3>
+                    <ul class="space-y-5">
+                        <li class="flex items-start gap-4">
+                            <span class="w-8 h-8 rounded-full bg-[#52B788] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
+                            <span class="text-white/80">{{ __('about.action_1') }}</span>
                         </li>
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-[#52B788] text-white flex items-center justify-center text-xs flex-shrink-0">2</span>
-                            {{ __('about.action_2') }}
+                        <li class="flex items-start gap-4">
+                            <span class="w-8 h-8 rounded-full bg-[#52B788] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
+                            <span class="text-white/80">{{ __('about.action_2') }}</span>
                         </li>
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-[#52B788] text-white flex items-center justify-center text-xs flex-shrink-0">3</span>
-                            {{ __('about.action_3') }}
+                        <li class="flex items-start gap-4">
+                            <span class="w-8 h-8 rounded-full bg-[#52B788] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
+                            <span class="text-white/80">{{ __('about.action_3') }}</span>
                         </li>
                     </ul>
                 </div>

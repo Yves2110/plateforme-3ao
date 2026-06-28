@@ -18,8 +18,11 @@ return [
     'partners_title' => 'Members & Partners',
     'partners_subtitle' => 'An alliance driven by a diverse ecosystem of peasant organizations, research centers, NGOs and regional networks.',
 
-    'governance_title' => 'Governance',
-    'governance_text' => 'The 3AO steering committee includes representatives from the main partner organizations. It defines strategic orientations, validates the roadmap and monitors the Alliance\'s activities.',
+    'brief_title' => '3AO in brief',
+    'brief_text' => 'The Alliance for Agroecology in West Africa brings together actors of the agroecological transition across 17 countries in the sub-region.',
+    'brief_point_1' => 'Platform created in April 2018',
+    'brief_point_2' => 'Steering committee of 7 member organizations',
+    'brief_point_3' => 'Contact: contact3AO@gmail.com',
     'actions_title' => 'Action areas',
     'action_1' => 'Consolidate and disseminate agroecological knowledge among farmers and organizations.',
     'action_2' => 'Map and highlight local and national agroecological initiatives.',

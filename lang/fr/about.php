@@ -18,8 +18,11 @@ return [
     'partners_title' => 'Membres & partenaires',
     'partners_subtitle' => 'Une alliance portée par un écosystème diversifié d\'organisations paysannes, de centres de recherche, d\'ONG et de réseaux régionaux.',
 
-    'governance_title' => 'Gouvernance',
-    'governance_text' => 'Le comité de pilotage de la 3AO comprend des représentants des principales organisations partenaires. Il définit les orientations stratégiques, valide la feuille de route et assure le suivi des activités de l\'Alliance.',
+    'brief_title' => '3AO en bref',
+    'brief_text' => 'L\'Alliance pour l\'Agroécologie en Afrique de l\'Ouest fédère les acteurs de la transition agroécologique à travers 17 pays de la sous-région.',
+    'brief_point_1' => 'Plateforme créée en avril 2018',
+    'brief_point_2' => 'Comité de pilotage de 7 organisations membres',
+    'brief_point_3' => 'Contact : contact3AO@gmail.com',
     'actions_title' => 'Axes d\'action',
     'action_1' => 'Consolider et disséminer le savoir agroécologique auprès des paysans et des organisations.',
     'action_2' => 'Cartographier et valoriser les initiatives agroécologiques locales et nationales.',
