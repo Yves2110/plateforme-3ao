@@ -3,7 +3,6 @@
 
     {{-- Hero --}}
     <section class="relative bg-gradient-to-br from-[#1A1A2E] to-[#2D6A4F] text-white overflow-hidden">
-        <div class="absolute inset-0 opacity-10 bg-[url('images/logo-3ao.jpeg')] bg-center bg-no-repeat bg-contain"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative">
             <div class="max-w-3xl">
                 <h1 class="text-4xl lg:text-5xl font-bold mb-6">
@@ -19,22 +18,26 @@
     {{-- Mission & Contexte --}}
     <section id="mission" class="py-16 lg:py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14 items-center">
+                <div class="lg:col-span-3">
                     <span class="inline-block px-3 py-1 rounded-full bg-[#2D6A4F]/10 text-[#2D6A4F] text-sm font-semibold mb-4">
                         {{ __('about.mission_badge') }}
                     </span>
                     <h2 class="text-3xl font-bold text-[#1A1A2E] mb-6">
                         {{ __('about.mission_title') }}
                     </h2>
-                    <div class="prose prose-lg text-gray-700">
+                    <div class="prose prose-lg text-gray-700 max-w-none">
                         <p>{{ __('about.mission_paragraph_1') }}</p>
                         <p>{{ __('about.mission_paragraph_2') }}</p>
                         <p>{{ __('about.mission_paragraph_3') }}</p>
                     </div>
                 </div>
-                <div class="relative rounded-2xl overflow-hidden shadow-xl">
-                    <img src="{{ asset('images/logo-3ao.jpeg') }}" alt="3AO" class="w-full h-auto object-cover">
+                <div class="lg:col-span-2 flex justify-center">
+                    <div class="w-full max-w-[320px] aspect-square rounded-2xl bg-[#F8F5F0] p-6 shadow-lg flex items-center justify-center">
+                        <img src="{{ asset('images/logo-3ao.jpeg') }}"
+                             alt="Logo 3AO"
+                             class="max-w-full max-h-full object-contain rounded-xl">
+                    </div>
                 </div>
             </div>
         </div>
