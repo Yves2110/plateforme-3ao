@@ -25,8 +25,8 @@ class RequireAdminTwoFactor
                 }
 
                 return redirect()
-                    ->route('profile.show')
-                    ->with('error', 'Activez l\'authentification à deux facteurs (2FA) pour accéder au back-office.');
+                    ->to(route('profile.show') . '#two-factor')
+                    ->with('error', 'Accès administration sécurisé : l\'authentification à deux facteurs (2FA) est obligatoire. Ouvrez l\'onglet "Authentification à deux facteurs" ci-dessous, scannez le QR code avec une application comme Google Authenticator ou Authy, puis saisissez le code de confirmation pour activer le 2FA.');
             }
         }
 

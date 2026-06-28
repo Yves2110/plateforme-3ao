@@ -1,0 +1,58 @@
+<?php
+
+return [
+    'title' => 'Mon profil',
+
+    'information_title' => 'Informations du profil',
+    'information_description' => 'Mettez à jour les informations de votre compte et votre adresse e-mail.',
+    'photo' => 'Photo de profil',
+    'select_photo' => 'Choisir une nouvelle photo',
+    'remove_photo' => 'Supprimer la photo',
+    'email_unverified' => 'Votre adresse e-mail n\'est pas vérifiée.',
+    'resend_verification' => 'Cliquez ici pour renvoyer l\'e-mail de vérification.',
+    'verification_sent' => 'Un nouveau lien de vérification a été envoyé à votre adresse e-mail.',
+    'saved' => 'Enregistré.',
+    'save' => 'Enregistrer',
+    'cancel' => 'Annuler',
+    'confirm' => 'Confirmer',
+
+    'password_title' => 'Modifier le mot de passe',
+    'password_description' => 'Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé.',
+    'current_password' => 'Mot de passe actuel',
+    'new_password' => 'Nouveau mot de passe',
+    'confirm_password' => 'Confirmer le mot de passe',
+
+    'two_factor_title' => 'Authentification à deux facteurs',
+    'two_factor_description' => 'Ajoutez une sécurité supplémentaire à votre compte avec l\'authentification à deux facteurs.',
+    'two_factor_finish' => 'Terminez l\'activation de l\'authentification à deux facteurs.',
+    'two_factor_enabled' => 'L\'authentification à deux facteurs est activée.',
+    'two_factor_not_enabled' => 'L\'authentification à deux facteurs n\'est pas activée.',
+    'two_factor_explanation' => 'Lorsque l\'authentification à deux facteurs est activée, vous serez invité à saisir un code sécurisé et aléatoire lors de la connexion. Vous pouvez obtenir ce code depuis l\'application Google Authenticator de votre téléphone.',
+    'two_factor_scan' => 'L\'authentification à deux facteurs est maintenant activée. Scannez le QR code suivant avec l\'application d\'authentification de votre téléphone ou saisissez la clé de configuration.',
+    'two_factor_scan_confirm' => 'Pour terminer l\'activation de l\'authentification à deux facteurs, scannez le QR code suivant avec l\'application d\'authentification de votre téléphone ou saisissez la clé de configuration, puis fournissez le code OTP généré.',
+    'two_factor_setup_key' => 'Clé de configuration',
+    'two_factor_recovery_store' => 'Conservez ces codes de récupération dans un gestionnaire de mots de passe sécurisé. Ils peuvent être utilisés pour récupérer l\'accès à votre compte si votre appareil d\'authentification à deux facteurs est perdu.',
+    'two_factor_enable' => 'Activer',
+    'two_factor_disable' => 'Désactiver',
+    'two_factor_confirm' => 'Confirmer',
+    'two_factor_cancel' => 'Annuler',
+    'two_factor_show_codes' => 'Afficher les codes de récupération',
+    'two_factor_regenerate_codes' => 'Régénérer les codes de récupération',
+
+    'sessions_title' => 'Sessions du navigateur',
+    'sessions_description' => 'Gérez et déconnectez vos sessions actives sur d\'autres navigateurs et appareils.',
+    'sessions_explanation' => 'Si nécessaire, vous pouvez vous déconnecter de toutes vos autres sessions de navigateur sur tous vos appareils. Certaines de vos sessions récentes sont listées ci-dessous, mais cette liste peut ne pas être exhaustive. Si vous pensez que votre compte a été compromis, vous devez également mettre à jour votre mot de passe.',
+    'unknown' => 'Inconnu',
+    'this_device' => 'Cet appareil',
+    'last_active' => 'Dernière activité',
+    'logout_other_sessions' => 'Déconnecter les autres sessions du navigateur',
+    'logout_other_sessions_confirm' => 'Veuillez saisir votre mot de passe pour confirmer que vous souhaitez vous déconnecter de vos autres sessions de navigateur sur tous vos appareils.',
+    'done' => 'Terminé.',
+
+    'delete_account_title' => 'Supprimer le compte',
+    'delete_account_description' => 'Supprimer définitivement votre compte.',
+    'delete_account_warning' => 'Une fois votre compte supprimé, toutes ses ressources et données seront définitivement effacées. Avant de supprimer votre compte, veuillez télécharger toutes les données ou informations que vous souhaitez conserver.',
+    'delete_account_confirm' => 'Êtes-vous sûr de vouloir supprimer votre compte ? Une fois votre compte supprimé, toutes ses ressources et données seront définitivement effacées. Veuillez saisir votre mot de passe pour confirmer que vous souhaitez supprimer définitivement votre compte.',
+
+    'confirm_password_content' => 'Pour votre sécurité, veuillez confirmer votre mot de passe pour continuer.',
+];

@@ -21,5 +21,37 @@ return [
     'verify_notice'      => 'Un lien de vérification a été envoyé à votre adresse e-mail.',
     'verify_resend'      => 'Renvoyer l\'e-mail de vérification',
     'profile'            => 'Mon profil',
+    'edit_profile'       => 'Modifier le profil',
     'two_factor'         => 'Authentification à deux facteurs',
+
+    'whoops'             => 'Oups ! Quelque chose s\'est mal passé.',
+    'toggle_password_show' => 'Afficher le mot de passe',
+    'toggle_password_hide' => 'Masquer le mot de passe',
+
+    'name_example'       => 'Exemple : Abdoul Rahim Kaboré',
+    'email_example'      => 'Exemple : abdoulrahimkabore187@gmail.com',
+    'organization'       => 'Organisation',
+    'organization_help'  => 'Structure, association ou institution que vous représentez.',
+    'registration_reason' => 'Motif de la demande',
+    'registration_reason_placeholder' => 'Décrivez brièvement pourquoi vous souhaitez rejoindre la plateforme 3AO…',
+    'registration_reason_help' => 'Minimum 20 caractères. Exemple : je souhaite partager des ressources agroécologiques avec mon réseau au Burkina Faso.',
+    'password_help'      => 'Minimum 10 caractères avec majuscule, minuscule, chiffre et symbole. Exemple : Rahim@2026!',
+    'password_confirm_help' => 'Ressaisissez exactement le même mot de passe.',
+    'confirm_password'   => 'Confirmer',
+    'confirm_password_help' => 'Cette zone est sécurisée. Veuillez confirmer votre mot de passe pour continuer.',
+    'forgot_password_help' => 'Mot de passe oublié ? Pas de problème. Indiquez-nous votre adresse e-mail et nous vous enverrons un lien de réinitialisation pour en choisir un nouveau.',
+
+    'terms_accept'       => 'J\'accepte les :terms_of_service et la :privacy_policy',
+    'terms_of_service'   => 'conditions d\'utilisation',
+    'privacy_policy'     => 'politique de confidentialité',
+
+    'verify_email_help'  => 'Avant de continuer, veuillez vérifier votre adresse e-mail en cliquant sur le lien que nous vous avons envoyé. Si vous ne l\'avez pas reçu, nous pouvons vous en renvoyer un.',
+    'verify_link_sent'   => 'Un nouveau lien de vérification a été envoyé à l\'adresse e-mail de votre profil.',
+
+    'two_factor_code'    => 'Code d\'authentification',
+    'two_factor_recovery_code' => 'Code de récupération',
+    'two_factor_code_help' => 'Veuillez confirmer l\'accès à votre compte en saisissant le code d\'authentification fourni par votre application d\'authentification.',
+    'two_factor_recovery_help' => 'Veuillez confirmer l\'accès à votre compte en saisissant l\'un de vos codes de récupération d\'urgence.',
+    'two_factor_use_recovery' => 'Utiliser un code de récupération',
+    'two_factor_use_code' => 'Utiliser un code d\'authentification',
 ];

@@ -21,5 +21,37 @@ return [
     'verify_notice'      => 'A verification link has been sent to your email address.',
     'verify_resend'      => 'Resend verification email',
     'profile'            => 'My profile',
+    'edit_profile'       => 'Edit profile',
     'two_factor'         => 'Two-factor authentication',
+
+    'whoops'             => 'Whoops! Something went wrong.',
+    'toggle_password_show' => 'Show password',
+    'toggle_password_hide' => 'Hide password',
+
+    'name_example'       => 'Example: Abdoul Rahim Kaboré',
+    'email_example'      => 'Example: abdoulrahimkabore187@gmail.com',
+    'organization'       => 'Organization',
+    'organization_help'  => 'Structure, association or institution you represent.',
+    'registration_reason' => 'Reason for request',
+    'registration_reason_placeholder' => 'Briefly describe why you want to join the 3AO platform…',
+    'registration_reason_help' => 'Minimum 20 characters. Example: I want to share agroecological resources with my network in Burkina Faso.',
+    'password_help'      => 'Minimum 10 characters with uppercase, lowercase, number and symbol. Example: Rahim@2026!',
+    'password_confirm_help' => 'Enter exactly the same password again.',
+    'confirm_password'   => 'Confirm',
+    'confirm_password_help' => 'This is a secure area. Please confirm your password to continue.',
+    'forgot_password_help' => 'Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.',
+
+    'terms_accept'       => 'I accept the :terms_of_service and the :privacy_policy',
+    'terms_of_service'   => 'terms of service',
+    'privacy_policy'     => 'privacy policy',
+
+    'verify_email_help'  => 'Before continuing, please verify your email address by clicking the link we sent you. If you did not receive it, we can resend one.',
+    'verify_link_sent'   => 'A new verification link has been sent to your email address.',
+
+    'two_factor_code'    => 'Authentication code',
+    'two_factor_recovery_code' => 'Recovery code',
+    'two_factor_code_help' => 'Please confirm access to your account by entering the authentication code provided by your authenticator application.',
+    'two_factor_recovery_help' => 'Please confirm access to your account by entering one of your emergency recovery codes.',
+    'two_factor_use_recovery' => 'Use a recovery code',
+    'two_factor_use_code' => 'Use an authentication code',
 ];

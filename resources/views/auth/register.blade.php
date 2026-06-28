@@ -11,41 +11,41 @@
             <x-spam-protection />
 
             <div>
-                <x-label for="name" value="Nom complet" />
+                <x-label for="name" value="{{ __('auth.name') }}" />
                 <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-                <p class="mt-1 text-xs text-gray-500">Exemple : Abdoul Rahim Kaboré</p>
+                <p class="mt-1 text-xs text-gray-500">{{ __('auth.name_example') }}</p>
             </div>
 
             <div class="mt-4">
-                <x-label for="email" value="Adresse e-mail" />
+                <x-label for="email" value="{{ __('auth.email') }}" />
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-                <p class="mt-1 text-xs text-gray-500">Exemple : abdoulrahimkabore187@gmail.com</p>
+                <p class="mt-1 text-xs text-gray-500">{{ __('auth.email_example') }}</p>
             </div>
 
             <div class="mt-4">
-                <x-label for="organization" value="Organisation" />
+                <x-label for="organization" value="{{ __('auth.organization') }}" />
                 <x-input id="organization" class="block mt-1 w-full" type="text" name="organization" :value="old('organization')" required autocomplete="organization" />
-                <p class="mt-1 text-xs text-gray-500">Structure, association ou institution que vous représentez.</p>
+                <p class="mt-1 text-xs text-gray-500">{{ __('auth.organization_help') }}</p>
             </div>
 
             <div class="mt-4">
-                <x-label for="registration_reason" value="Motif de la demande" />
+                <x-label for="registration_reason" value="{{ __('auth.registration_reason') }}" />
                 <textarea id="registration_reason" name="registration_reason" rows="4" required
                           class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                          placeholder="Décrivez brièvement pourquoi vous souhaitez rejoindre la plateforme 3AO…">{{ old('registration_reason') }}</textarea>
-                <p class="mt-1 text-xs text-gray-500">Minimum 20 caractères. Exemple : je souhaite partager des ressources agroécologiques avec mon réseau au Burkina Faso.</p>
+                          placeholder="{{ __('auth.registration_reason_placeholder') }}">{{ old('registration_reason') }}</textarea>
+                <p class="mt-1 text-xs text-gray-500">{{ __('auth.registration_reason_help') }}</p>
             </div>
 
             <div class="mt-4">
-                <x-label for="password" value="Mot de passe" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-                <p class="mt-1 text-xs text-gray-500">Minimum 10 caractères avec majuscule, minuscule, chiffre et symbole. Exemple : Rahim@2026!</p>
+                <x-label for="password" value="{{ __('auth.password') }}" />
+                <x-password-input id="password" name="password" class="mt-1" required autocomplete="new-password" />
+                <p class="mt-1 text-xs text-gray-500">{{ __('auth.password_help') }}</p>
             </div>
 
             <div class="mt-4">
-                <x-label for="password_confirmation" value="Confirmer le mot de passe" />
-                <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-                <p class="mt-1 text-xs text-gray-500">Ressaisissez exactement le même mot de passe.</p>
+                <x-label for="password_confirmation" value="{{ __('auth.password_confirm') }}" />
+                <x-password-input id="password_confirmation" name="password_confirmation" class="mt-1" required autocomplete="new-password" />
+                <p class="mt-1 text-xs text-gray-500">{{ __('auth.password_confirm_help') }}</p>
             </div>
 
             @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
@@ -55,9 +55,9 @@
                             <x-checkbox name="terms" id="terms" required />
 
                             <div class="ms-2">
-                                {!! __('J\'accepte les :terms_of_service et la :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('conditions d\'utilisation').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('politique de confidentialité').'</a>',
+                                {!! __('auth.terms_accept', [
+                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('auth.terms_of_service').'</a>',
+                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('auth.privacy_policy').'</a>',
                                 ]) !!}
                             </div>
                         </div>
@@ -67,11 +67,11 @@
 
             <div class="flex items-center justify-end mt-4">
                 <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                    Déjà inscrit(e) ?
+                    {{ __('auth.already_account') }}
                 </a>
 
                 <x-button class="ms-4">
-                    Créer mon compte
+                    {{ __('auth.register') }}
                 </x-button>
             </div>
         </form>

@@ -15,9 +15,6 @@ return [
     'committee_members' => 'Membres du comité de pilotage',
     'west_african_countries' => 'Pays de l\'Afrique de l\'Ouest',
 
-    'partners_title' => 'Membres & partenaires',
-    'partners_subtitle' => 'Une alliance portée par un écosystème diversifié d\'organisations paysannes, de centres de recherche, d\'ONG et de réseaux régionaux.',
-
     'brief_title' => '3AO en bref',
     'brief_text' => 'L\'Alliance pour l\'Agroécologie en Afrique de l\'Ouest fédère les acteurs de la transition agroécologique à travers 17 pays de la sous-région.',
     'brief_point_1' => 'Plateforme créée en avril 2018',
