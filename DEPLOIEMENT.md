@@ -214,6 +214,26 @@ supervisorctl restart 3ao-worker:*
 
 ---
 
+## 11. Authentification à deux facteurs (2FA)
+
+Le 2FA est **optionnel** par défaut pour tous les utilisateurs, y compris les `super_admin` et `moderateur`.
+
+Pour l'imposer aux administrateurs en production, ajoutez dans `.env` :
+
+```env
+SECURITY_REQUIRE_ADMIN_2FA=true
+```
+
+Puis videz le cache :
+
+```bash
+php artisan config:cache
+```
+
+Lorsqu'il est activé, les administrateurs sans 2FA sont redirigés vers leur profil avec un message explicitant comment activer le 2FA (onglet « Authentification à deux facteurs »).
+
+---
+
 ## Compte admin par défaut
 - **Email** : `admin@3ao.org`
 - **Mot de passe** : défini dans `.env` ou à changer immédiatement après premier login via `/admin`

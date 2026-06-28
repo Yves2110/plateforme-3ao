@@ -34,7 +34,7 @@ return [
 
     'require_admin_2fa' => env(
         'SECURITY_REQUIRE_ADMIN_2FA',
-        env('APP_ENV') === 'production'
+        false
     ),
 
 ];
