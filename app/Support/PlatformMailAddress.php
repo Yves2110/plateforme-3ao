@@ -4,7 +4,7 @@ namespace App\Support;
 
 use Symfony\Component\Mime\Address;
 
-class PlatformMailAddress
+final class PlatformMailAddress
 {
     public static function from(): Address
     {

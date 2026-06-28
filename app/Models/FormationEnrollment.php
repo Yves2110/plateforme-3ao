@@ -27,10 +27,10 @@ class FormationEnrollment extends Model
         'completed_at' => 'datetime',
     ];
 
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_COMPLETED = 'completed';
-    public const STATUS_CANCELLED = 'cancelled';
+    public const string STATUS_PENDING = 'pending';
+    public const string STATUS_ACTIVE = 'active';
+    public const string STATUS_COMPLETED = 'completed';
+    public const string STATUS_CANCELLED = 'cancelled';
 
     public function user()
     {

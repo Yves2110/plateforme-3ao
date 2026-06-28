@@ -33,6 +33,13 @@
 - ✅ Erreur route `admin.users.pending` corrigée
 - ✅ Erreur syntaxe Blade `match()` dans formations/index.blade.php corrigée
 
+### 5. **Migration PHP 8.3 minimum**
+- ✅ `composer.json` verrouillé sur `php: ^8.3` avec `config.platform.php: 8.3.0`
+- ✅ Script `test` avec `composer check-platform-reqs`
+- ✅ Documentation (`README.md`, `DEPLOIEMENT.md`) alignée sur PHP 8.3+
+- ✅ CI GitHub Actions PHP 8.3
+- ✅ Modernisation du code : constantes typées, `json_validate()`, `#[Override]`, `readonly`, `match`, etc.
+
 ---
 
 ## ⏳ **Ce qu'il reste à faire**

@@ -7,6 +7,18 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Plateforme 3AO
+
+Plateforme collaborative pour l'Agroécologie (Alliance 3AO). Application Laravel 11.x + Livewire 3 + Alpine.js + TailwindCSS.
+
+### Prérequis
+
+- **PHP** 8.3+
+- **MySQL** 8.0+
+- **Composer** 2.x
+- **Node.js** 18+ (build Vite)
+- Extensions PHP : `pdo_mysql`, `mbstring`, `intl`, `gd` ou `imagick`, `zip`, `xml`, `fileinfo`, `curl`
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

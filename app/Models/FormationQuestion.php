@@ -25,10 +25,10 @@ class FormationQuestion extends Model
         'order' => 'integer',
     ];
 
-    public const TYPE_SINGLE_CHOICE = 'single_choice';
-    public const TYPE_MULTIPLE_CHOICE = 'multiple_choice';
-    public const TYPE_TRUE_FALSE = 'true_false';
-    public const TYPE_TEXT = 'text';
+    public const string TYPE_SINGLE_CHOICE = 'single_choice';
+    public const string TYPE_MULTIPLE_CHOICE = 'multiple_choice';
+    public const string TYPE_TRUE_FALSE = 'true_false';
+    public const string TYPE_TEXT = 'text';
 
     public function quiz()
     {

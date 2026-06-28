@@ -4,7 +4,7 @@ namespace App\Support;
 
 use Illuminate\Validation\Rule;
 
-class ActualiteCategories
+final class ActualiteCategories
 {
     public static function all(): array
     {

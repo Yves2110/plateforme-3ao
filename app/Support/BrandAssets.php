@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-class BrandAssets
+final class BrandAssets
 {
     public static function logoUrl(): string
     {

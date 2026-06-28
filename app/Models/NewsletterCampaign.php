@@ -8,17 +8,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class NewsletterCampaign extends Model
 {
-    public const STATUS_DRAFT = 'draft';
+    public const string STATUS_DRAFT = 'draft';
 
-    public const STATUS_SCHEDULED = 'scheduled';
+    public const string STATUS_SCHEDULED = 'scheduled';
 
-    public const STATUS_SENDING = 'sending';
+    public const string STATUS_SENDING = 'sending';
 
-    public const STATUS_SENT = 'sent';
+    public const string STATUS_SENT = 'sent';
 
-    public const STATUS_CANCELLED = 'cancelled';
+    public const string STATUS_CANCELLED = 'cancelled';
 
-    public const STATUS_FAILED = 'failed';
+    public const string STATUS_FAILED = 'failed';
 
     protected $fillable = [
         'subject',

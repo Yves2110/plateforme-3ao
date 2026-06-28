@@ -5,13 +5,13 @@ namespace App\Support;
 use App\Models\Event;
 use Carbon\Carbon;
 
-class EventSchedule
+final readonly class EventSchedule
 {
-    public const STATUS_ACTIVE = 'active';
+    public const string STATUS_ACTIVE = 'active';
 
-    public const STATUS_SOON = 'soon';
+    public const string STATUS_SOON = 'soon';
 
-    public const STATUS_EXPIRED = 'expired';
+    public const string STATUS_EXPIRED = 'expired';
 
     public static function for(Event $event): self
     {

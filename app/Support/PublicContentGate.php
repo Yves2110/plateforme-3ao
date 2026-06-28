@@ -4,7 +4,7 @@ namespace App\Support;
 
 use App\Models\User;
 
-class PublicContentGate
+final class PublicContentGate
 {
     public static function can(array $permissions): bool
     {

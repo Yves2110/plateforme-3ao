@@ -1,7 +1,7 @@
 # Guide de Déploiement — Plateforme 3AO
 
 ## Stack requise
-- **PHP** 8.2+ avec extensions : `pdo_mysql`, `mbstring`, `intl`, `gd` ou `imagick`, `zip`, `xml`, `fileinfo`, `curl`
+- **PHP** 8.3+ avec extensions : `pdo_mysql`, `mbstring`, `intl`, `gd` ou `imagick`, `zip`, `xml`, `fileinfo`, `curl`
 - **MySQL** 8.0+
 - **Nginx** ou Apache
 - **Node.js** 18+ (build Vite)
